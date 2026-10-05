@@ -334,7 +334,9 @@ export const SHAPES = {
   },
   oneai(ctx) {
     const s = new Shape(12);
-    const rt = rasterText(ctx.portrait ? ['ONE', 'AI.'] : ['ONE AI.'], { family: ctx.font, weight: 600, lineGap: 0.98 });
+    const ar = ctx.lang === 'ar';
+    const lines = ar ? (ctx.portrait ? ['ذكاء', 'واحد'] : ['ذكاء واحد']) : ctx.portrait ? ['ONE', 'AI.'] : ['ONE AI.'];
+    const rt = rasterText(lines, { family: ctx.font, weight: 600, lineGap: ar ? 1.15 : 0.98, track: ar ? 0 : -0.02 });
     s.text(rt, 0, 0, ctx.portrait ? 5 : 8.4, 10);
     return s;
   },
@@ -935,6 +937,23 @@ export const SHAPES = {
       s.tint = 0.4;
       s.path((t) => [c[0] * (0.42 + 0.58 * t) * (1 - 0.1 * (1 - t)), c[1] * (0.42 + 0.58 * t), c[2] * t], { o, d: 0.28, j: 0.01 });
     }
+    return s;
+  },
+
+  newcap() {
+    // A.L.I.E. alone, with a new blue orbit: a capability that replaces nothing
+    const s = new Shape(132);
+    s.tint = 0.06;
+    s.sphere([0, 0, 0], 0.85, { w: 3000 });
+    s.tint = 0.45;
+    s.sphere([0, 0, 0], 0.85, { w: 900, vol: true });
+    s.tint = 1;
+    s.blob([0, 0, 0], 0.16, 480);
+    s.tint = 0.9;
+    s.path(ring3(1.45, 0.3), { d: 1.7 });
+    s.path(ring3(2.05, -0.38, 1), { d: 1.3 });
+    s.tint = 0.5;
+    s.path(ring3(2.7, 0.18, 2), { d: 0.6 });
     return s;
   },
 

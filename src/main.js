@@ -256,7 +256,7 @@ const cache = new Map();
 function getShape(id) {
   let sh = cache.get(id);
   if (!sh) {
-    sh = SHAPES[id]({ portrait, font: FONT }).build(N);
+    sh = SHAPES[id]({ portrait, font: FONT, lang }).build(N);
     cache.set(id, sh);
   }
   return sh;
@@ -526,7 +526,7 @@ function frame(now) {
 
   /* chapters: copy reveal, scrubbed behaviours, anchors */
   group.updateMatrixWorld(true);
-  ghostList.forEach((g) => (g.points.visible = false));
+  ghostList.forEach((g) => g.hide());
   let energy = 0;
   chapters.forEach((c) => {
     const near = y > c.top - vh * 1.2 && y < c.top + c.h + vh * 0.2;
@@ -568,8 +568,8 @@ function updateGhosts(c, p) {
       tmpV.set(q[0], q[1], q[2]);
     } else tmpV.set(0, 0, 0);
     tmpV.applyMatrix4(group.matrixWorld);
-    g.set({ x, y, w, asm: v.asm, wave: v.wave, dis: v.dis, state: v.state, tx: tmpV.x, ty: tmpV.y, tz: tmpV.z });
-    energy = Math.max(energy, Math.sin(Math.PI * clamp((v.dis - 0.2) / 0.75)) * (v.dis < 0.999 ? 1 : 0));
+    g.set({ ox: x, oy: y, w, asm: v.asm, xp: v.x, xo: v.xo, dis: v.dis, state: v.state, out: v.out, tx: tmpV.x, ty: tmpV.y, tz: tmpV.z });
+    energy = Math.max(energy, Math.sin(Math.PI * clamp(((v.dis || 0) - 0.2) / 0.75)) * ((v.dis || 0) < 0.999 ? 1 : 0), Math.sin(Math.PI * (v.fin || 0)) * (1 - (v.out || 0)));
     if (gs.label) {
       const op = gs.labelOp(p);
       const sx = (x / (visW * 0.5)) * 0.5 + 0.5;
@@ -613,6 +613,15 @@ function projectAnchors(c, p, y) {
 /* ------------------------------------------------------------------ */
 /* UI                                                                  */
 /* ------------------------------------------------------------------ */
+function resetLangShapes() {
+  try {
+    cache.delete('oneai');
+    curA = curB = null;
+  } catch (e) {
+    /* static mode */
+  }
+}
+
 function bindUI() {
   const snd = document.getElementById('snd');
   const lng = document.getElementById('lang');
@@ -628,9 +637,14 @@ function bindUI() {
     refreshSound();
     audio.blip(0);
   });
-  lng.addEventListener('click', () => {
+  lng.addEventListener('click', async () => {
     lang = lang === 'ar' ? 'en' : 'ar';
     applyLang(lang);
+    resetLangShapes();
+    if (lang === 'ar') {
+      try { await document.fonts.load("600 200px 'IBM Plex Sans Arabic'", 'ذكاء واحد'); } catch (e) { /* fallback font */ }
+      resetLangShapes();
+    }
     try { requestAnimationFrame(measure); } catch (err) { /* static mode */ }
   });
   cta?.addEventListener('click', (e) => {
@@ -664,6 +678,7 @@ bindUI();
         document.fonts.load("560 200px 'Geist Variable'"),
         document.fonts.load("600 200px 'Geist Variable'"),
         document.fonts.load("700 200px 'Geist Variable'"),
+        lang === 'ar' ? document.fonts.load("600 200px 'IBM Plex Sans Arabic'", 'ذكاء واحد') : Promise.resolve(),
         document.fonts.ready,
       ]),
       new Promise((r) => setTimeout(r, 1800)),

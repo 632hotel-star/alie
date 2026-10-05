@@ -97,7 +97,7 @@ export function createStory(root, api) {
       ],
       ghosts: [{
         id: 'chatgpt', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.46],
-        tl: (p) => ({ asm: sm(0.56, 0.64, p), wave: lin(0.66, 0.75, p) * 1.3, dis: lin(0.76, 0.9, p) }),
+        tl: (p) => ({ asm: sm(0.5, 0.58, p), x: lin(0.6, 0.67, p), xo: lin(0.7, 0.74, p), state: lin(0.7, 0.8, p), fin: lin(0.7, 0.8, p), out: lin(0.96, 1, p) }),
       }],
       update(p) {
         const idx = p < 0.16 ? 0 : p < 0.3 ? 1 : p < 0.46 ? 2 : 3;
@@ -146,7 +146,7 @@ export function createStory(root, api) {
       ],
       ghosts: [{
         id: 'siri', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.3],
-        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, dis: lin(0.34, 0.48, p) }),
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), x: lin(0.13, 0.21, p), xo: lin(0.25, 0.29, p), state: lin(0.25, 0.35, p), fin: lin(0.25, 0.35, p), out: lin(0.96, 1, p) }),
       }],
       update(p) {
         typed(say, say.dataset.full, 0.06, 0.28, p);
@@ -175,7 +175,7 @@ export function createStory(root, api) {
       ],
       ghosts: [{
         id: 'alexa', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.36],
-        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, dis: lin(0.36, 0.5, p) }),
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), x: lin(0.13, 0.21, p), xo: lin(0.25, 0.29, p), state: lin(0.25, 0.35, p), fin: lin(0.25, 0.35, p), out: lin(0.96, 1, p) }),
       }],
       update(p) {
         typed(say, say.dataset.full, 0.06, 0.28, p);
@@ -234,7 +234,7 @@ export function createStory(root, api) {
       ],
       ghosts: [{
         id: 'claude', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.36],
-        tl: (p) => ({ asm: sm(0.5, 0.58, p), wave: lin(0.6, 0.7, p) * 1.3, dis: lin(0.7, 0.84, p) }),
+        tl: (p) => ({ asm: sm(0.46, 0.54, p), x: lin(0.56, 0.63, p), xo: lin(0.66, 0.7, p), state: lin(0.66, 0.76, p), fin: lin(0.66, 0.76, p), out: lin(0.97, 1, p) }),
       }],
       update(p) {
         const idx = p < 0.05 ? 0 : p < 0.15 ? 1 : p < 0.25 ? 2 : p < 0.35 ? 3 : p < 0.45 ? 4 : p < 0.57 ? 5 : -1;
@@ -286,6 +286,8 @@ export function createStory(root, api) {
   /* ---------------- nothing to replace ---------------- */
   def('seek', (el) => {
     const mon = $$('.mon li', el);
+    const monList = $('.mon', el);
+    const newcap = $('.newcap', el);
     const nrf = $('.nrf', el);
     const because = $('.because', el);
     const nothing = $('.nothing', el);
@@ -298,12 +300,16 @@ export function createStory(root, api) {
     return {
       beats: [
         { s: 'seeker', at: 0, ...lay },
-        { s: 'seeker', at: 1, ...lay },
+        { s: 'seeker', at: 0.64, ...lay, hout: 0.3 },
+        { s: 'newcap', at: 0.8, lay: 'text', amp: 0.05, ks: 0.8, hin: 0.2 },
+        { s: 'newcap', at: 1, lay: 'text', amp: 0.05, ks: 0.8 },
       ],
       update(p) {
         const idx = p < 0.05 ? -1 : p < 0.14 ? 0 : p < 0.24 ? 1 : p < 0.34 ? 2 : p < 0.44 ? 3 : 4;
         mark(mon, idx);
         idxChange('m', idx, el);
+        monList.style.opacity = String(1 - sm(0.62, 0.68, p));
+        show(newcap, 0.7, 0.76, p);
         show(nrf, 0.6, 0.65, p);
         show(because, 0.68, 0.72, p);
         show(nothing, 0.74, 0.78, p);
@@ -333,7 +339,7 @@ export function createStory(root, api) {
       ],
       ghosts: [{
         id: 'gemini', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.4],
-        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, state: lin(0.22, 0.36, p) + lin(0.5, 0.64, p), dis: lin(0.76, 0.9, p) }),
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), x: lin(0.11, 0.17, p), xo: lin(0.2, 0.24, p), state: lin(0.2, 0.32, p) + lin(0.44, 0.56, p) + lin(0.7, 0.8, p), fin: lin(0.7, 0.8, p), out: lin(0.97, 1, p) }),
       }],
       update(p) {
         const idx = p < 0.3 ? 2 : p < 0.7 ? 0 : 1;
@@ -348,7 +354,6 @@ export function createStory(root, api) {
   /* ---------------- interface ---------------- */
   def('iface', (el) => {
     const label = $('.state-label', el);
-    const states = ['Listening', 'Thinking', 'Searching', 'Coding', 'Home', 'Study', 'Creating'];
     const at = [0, 0.15, 0.3, 0.47, 0.63, 0.78, 0.93];
     const t = (n) => (time) => 0.18 + 0.9 * (0.5 - 0.5 * Math.cos(time * n));
     return {
@@ -365,7 +370,7 @@ export function createStory(root, api) {
       update(p) {
         let idx = 0;
         for (let i = 1; i < at.length; i++) if (p >= (at[i] + at[i - 1]) / 2 + 0.01) idx = i;
-        setText(label, states[idx]);
+        setText(label, dict()[`state.${idx + 1}`]);
         idxChange('i', idx, el);
       },
     };
@@ -438,7 +443,7 @@ export function createStory(root, api) {
         return {
           id, pd: pd[i], pm: pm[i], tgt: { shape: 'human', p: targets[i] }, label: caps[i],
           labelOp: (p) => sm(s + 0.12, s + 0.17, p),
-          tl: (p) => ({ asm: sm(0.0, 0.1, p), wave: lin(s - 0.04, s + 0.04, p) * 1.3, dis: lin(s + 0.02, s + 0.13, p) }),
+          tl: (p) => ({ asm: sm(0.0, 0.1, p), x: lin(s - 0.08, s - 0.01, p), xo: lin(s - 0.0, s + 0.04, p), dis: lin(s + 0.01, s + 0.12, p) }),
         };
       }),
       update(p) {
