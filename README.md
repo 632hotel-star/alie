@@ -1,4 +1,4 @@
-# A.L.I.E. 2
+# A.L.I.E.
 
 A scroll-driven particle experience. One GPU particle system (Three.js, custom shaders) morphs between
 about 30 procedural shapes as you scroll: wordmark, neural network, self-extending core, laptop, house,

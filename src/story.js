@@ -1,7 +1,7 @@
 // The story: which shape the particles hold at each point of the scroll, and the small
 // scroll-scrubbed behaviours (typing, steps, timelines) that live in the copy.
 import { STRINGS } from './i18n.js';
-import { ONE_NET_ANCHORS, globeAnchors } from './shapes.js';
+import { ONE_NET_ANCHORS, WORK_NODES, globeAnchors } from './shapes.js';
 
 export const NONE = 9;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -186,6 +186,60 @@ export function createStory(root, api) {
         idxChange('h', n - 1, el);
         const k = show(claim, 0.56, 0.62, p);
         $('.copy', el).classList.toggle('claimed', k > 0.5);
+      },
+    };
+  });
+
+  /* ---------------- email, files, calendar ---------------- */
+  def('work', (el) => {
+    const say = $('.say .typed', el);
+    const note = $('.wnote', el);
+    const lay = { lay: 'side', ks: 0.88, ky: -0.04, ksm: 0.8, kym: -0.07 };
+    const g0 = (p) => 0.08 + 0.95 * sm(0.05, 0.2, p);
+    const gm = (p) => 0.08 + 0.58 * sm(0.28, 0.32, p) + 0.36 * sm(0.35, 0.4, p);
+    const gf = (p) => 0.08 + 0.58 * sm(0.6, 0.64, p) + 0.36 * sm(0.65, 0.69, p);
+    const gc = (p) => 0.08 + 0.26 * sm(0.87, 0.9, p) + 0.68 * sm(0.94, 0.99, p);
+    // a label belongs to the network first, then to its own scene
+    const svc = (id, node, nw, scene, sw, i, n) => ({
+      id, text: `[data-svc="${id === 'cal' ? 'cal' : id}"]`,
+      tl(p, h) {
+        const first = p < scene[0] - 0.05;
+        if (first) {
+          const a = sm(0.02, 0.08, p), o = lin(0.1, 0.15, p);
+          const pos = h.node('workNet', WORK_NODES[node], 0.55);
+          return { asm: a, out: o, pos: { ...pos, w: h.fw(nw) } };
+        }
+        const a = sm(scene[0], scene[1], p), o = lin(scene[2], scene[3], p);
+        const pos = h.top(i, n);
+        return { asm: a, out: o, alpha: 1 - lin(0.97, 1, p), pos: { ...pos, w: h.fw(sw) } };
+      },
+    });
+    const beats = (s, a, b, g) => [{ s, at: a, ...lay, grow: g }, { s, at: b, ...lay, grow: g }];
+    return {
+      beats: [
+        ...beats('workNet', 0, 0.09, g0),
+        ...beats('mail', 0.22, 0.4, gm),
+        ...beats('files', 0.55, 0.7, gf),
+        ...beats('cal', 0.86, 1, gc),
+      ],
+      pt: [
+        svc('gmail', 0, 0.075, [0.2, 0.25, 0.4, 0.45], 0.1, 0, 1),
+        svc('drive', 1, 0.1, [0.54, 0.6, 0.7, 0.75], 0.11, 0, 3),
+        svc('docs', 2, 0.1, [0.54, 0.6, 0.7, 0.75], 0.1, 1, 3),
+        svc('sheets', 3, 0.1, [0.54, 0.6, 0.7, 0.75], 0.11, 2, 3),
+        svc('cal', 4, 0.12, [0.84, 0.9, 1.1, 1.2], 0.12, 0, 1),
+      ],
+      update(p) {
+        const d = dict();
+        let k, a, b;
+        if (p < 0.31) { k = 1; a = 0.23; b = 0.28; }
+        else if (p < 0.5) { k = 2; a = 0.32; b = 0.35; }
+        else if (p < 0.8) { k = 3; a = 0.55; b = 0.6; }
+        else if (p < 0.885) { k = 4; a = 0.84; b = 0.87; }
+        else { k = 5; a = 0.9; b = 0.94; }
+        say.dataset.full = d[`work.say${k}`];
+        typed(say, say.dataset.full, a, b, p);
+        setText(note, d[p < 0.5 ? 'work.note1' : p < 0.8 ? 'work.note2' : 'work.note3']);
       },
     };
   });
@@ -415,60 +469,98 @@ export function createStory(root, api) {
   });
 
   /* ---------------- before you start ---------------- */
-  def('before', () => ({
-    beats: [
-      { s: 'dust', at: 0, lay: 'bg', dim: 0.4 },
-      { s: 'dust', at: 1, lay: 'bg', dim: 0.4 },
-    ],
-    update() {},
-  }));
-
-  /* ---------------- everything becomes A.L.I.E. ---------------- */
-  def('all', (el) => {
-    const caps = $$('.cap', el);
-    const lines = $$('.five li', el);
-    const names = ['chatgpt', 'claude', 'gemini', 'alexa', 'siri'];
-    const targets = [[0, 2.62, 0], [1.0, 0.8, 0], [-1.0, 0.8, 0], [0, -1.2, 0], [0, 1.45, 0.05]];
-    const pd = [[-0.27, 0.2, 0.15], [0.27, 0.2, 0.15], [-0.28, -0.1, 0.15], [0.28, -0.1, 0.15], [0, 0.41, 0.13]];
-    const pm = [[-0.25, 0.3, 0.22], [0.25, 0.3, 0.22], [-0.25, -0.24, 0.22], [0.25, -0.24, 0.22], [0, 0.4, 0.2]];
-    const grow = (p) => keyframes([[0, 0.08], [0.2, 0.08], [0.27, 0.3], [0.33, 0.3], [0.4, 0.5], [0.46, 0.5], [0.53, 0.7], [0.59, 0.7], [0.66, 0.9], [0.72, 0.9], [0.79, 1.1]], p);
-    const lay = { s: 'human', lay: 'center', grow, ks: 1.38, ksm: 1.12, amp: 0.012, stagger: 0.9 };
+  def('before', () => {
+    const plat = (k) => ({
+      id: k, slot: `[data-p="${k}"] .pslot`,
+      opts: (el, h) => ({ text: el.textContent.trim(), weight: 560, track: -0.03, M: k === 'mob' ? 3000 : 2300, ...(k === 'mac' ? { check: -1 } : { cross: -1 }) }),
+      tl(p, h, r) {
+        const f = (r.top + r.height / 2) / h.vh;
+        return { asm: sm(0.95, 0.74, f), strike: lin(0.72, 0.56, f), blue: k === 'mac' ? 1 : 0 };
+      },
+    });
     return {
       beats: [
-        { ...lay, at: 0 },
-        { ...lay, at: 0.88, stagger: undefined },
+        { s: 'dust', at: 0, lay: 'bg', dim: 0.4 },
+        { s: 'dust', at: 1, lay: 'bg', dim: 0.4 },
       ],
+      pt: [plat('mac'), plat('win'), plat('mob')],
+      update() {},
+    };
+  });
+
+  /* ---------------- everything else is replaced ---------------- */
+  def('all', (el) => {
+    const lines = $$('.five li', el);
+    const five = $('.five', el);
+    const fin = $('.allfin', el);
+    const names = ['chatgpt', 'claude', 'gemini', 'alexa', 'siri'];
+    const pd = [[-0.27, 0.2, 0.15], [0.27, 0.2, 0.15], [-0.28, -0.1, 0.15], [0.28, -0.1, 0.15], [0, 0.41, 0.13]];
+    const pm = [[-0.25, 0.3, 0.22], [0.25, 0.3, 0.22], [-0.25, -0.24, 0.22], [0.25, -0.24, 0.22], [0, 0.4, 0.2]];
+    const lay = { s: 'human', lay: 'center', ks: 1.38, ksm: 1.12, amp: 0.012 };
+    return {
+      beats: [
+        { ...lay, at: 0, stagger: 0.9 },
+        { ...lay, at: 0.94 },
+      ],
+      // a red X on each, then the name falls apart and is gone. Nothing flows into A.L.I.E.
       ghosts: names.map((id, i) => {
-        const s = 0.13 + 0.13 * i;
+        const s = 0.12 + 0.12 * i;
         return {
-          id, pd: pd[i], pm: pm[i], tgt: { shape: 'human', p: targets[i] }, label: caps[i],
-          labelOp: (p) => sm(s + 0.12, s + 0.17, p),
-          tl: (p) => ({ asm: sm(0.0, 0.1, p), x: lin(s - 0.08, s - 0.01, p), xo: lin(s - 0.0, s + 0.04, p), dis: lin(s + 0.01, s + 0.12, p) }),
+          id, pd: pd[i], pm: pm[i],
+          tl: (p) => ({ asm: sm(0.0, 0.1, p), x: lin(s - 0.07, s, p), xo: lin(s, s + 0.03, p), dis: lin(s + 0.01, s + 0.1, p) }),
         };
       }),
       update(p) {
-        lines.forEach((li, i) => show(li, 0.82 + i * 0.045, 0.86 + i * 0.045, p));
+        lines.forEach((li, i) => show(li, 0.72 + i * 0.045, 0.76 + i * 0.045, p));
+        five.style.opacity = String(1 - sm(0.86, 0.9, p));
+        show(fin, 0.88, 0.93, p);
       },
     };
   });
 
-  /* ---------------- finale ---------------- */
+  /* ---------------- finale: A.L.I.E. 1 ---------------- */
   def('end', (el) => {
     const lines = $$('.lines li', el);
+    const linesWrap = $('.lines', el);
     const cta = $('.cta', el);
-    const mk = $('.endmark', el);
-    const sub = $('.endsub', el);
+    const oname = $('.oname', el);
+    const oavail = $('.oavail', el);
+    const ooff = $('.ooff', el);
+    const olim = $('.olim', el);
+    const track = (h) => (h.ar ? 0 : -0.04);
     return {
       beats: [
         { s: 'orb', at: 0.0, lay: 'top', stagger: 0.6, amp: 0.07, spin: 0.05, hout: 0.05, hin: 0.0 },
         { s: 'orb', at: 1, lay: 'top', amp: 0.07, spin: 0.05 },
       ],
+      pt: [
+        {
+          id: 'priceOld', slot: '.price-old',
+          opts: (el2, h) => ({ text: el2.textContent.trim(), weight: 600, track: track(h), strike: true, M: 4200 }),
+          tl: (p) => ({ asm: sm(0.5, 0.56, p), strike: lin(0.58, 0.64, p), out: lin(0.7, 0.78, p) }),
+        },
+        {
+          id: 'priceNew', slot: '.price-new',
+          opts: (el2, h) => ({ text: el2.textContent.trim(), weight: 600, track: track(h), halo: true, M: 4200, hw: 200 }),
+          tl: (p) => ({ asm: sm(0.74, 0.82, p), blue: 1, pulse: lin(0.8, 0.9, p), hover: Math.sin(Math.PI * lin(0.8, 0.94, p)) * 0.9 }),
+        },
+        {
+          id: 'cta', slot: '.cta .t', hoverEl: '.cta',
+          opts: (el2, h, r) => {
+            const c = h.rect(el2.closest('.cta'));
+            return { text: el2.textContent.trim(), weight: 560, track: h.ar ? 0 : -0.01, M: 5200, halo: true, hw: 260, tw: 520, pill: { w: +(c.width / r.width).toFixed(2), h: +(c.height / r.width).toFixed(3) } };
+          },
+          tl: (p) => ({ asm: sm(0.92, 1, p) }),
+        },
+      ],
       update(p) {
-        show(mk, 0.16, 0.26, p);
-        show(sub, 0.24, 0.34, p);
-        lines.forEach((li, i) => show(li, 0.38 + i * 0.09, 0.47 + i * 0.09, p));
-        show(cta, 0.76, 0.86, p);
-        cta.style.pointerEvents = p > 0.78 ? 'auto' : 'none';
+        lines.forEach((li, i) => show(li, 0.04 + i * 0.07, 0.1 + i * 0.07, p));
+        linesWrap.style.opacity = String(1 - sm(0.34, 0.38, p));
+        show(oname, 0.38, 0.44, p);
+        show(oavail, 0.44, 0.5, p);
+        show(ooff, 0.84, 0.9, p);
+        show(olim, 0.88, 0.93, p);
+        cta.style.pointerEvents = p > 0.9 ? 'auto' : 'none';
       },
     };
   });

@@ -32,12 +32,10 @@ const VERT = /* glsl */ `
     vec3 p = mix(start, home, asb);
     p += vec3(sin(aR.y * 50.0 + uTime * 1.3), cos(aR.z * 40.0 + uTime), sin(aR.w * 60.0 + uTime * 0.8)) * uScale * 0.003;
 
-    // dissolve toward A.L.I.E. (used by the final scene)
+    // dissolve: the name falls apart and disappears, it does not go anywhere
     float d = clamp(uDis * 1.7 - (xn * 0.5 + aR.x * 0.5), 0.0, 1.0);
     float ed = ease(d);
-    vec3 tgt = uTarget + (aR.yzw - 0.5) * 0.4;
-    vec3 arc = vec3(0.0, (aR.y - 0.35) * 1.4, (aR.z - 0.5) * 1.6) * uScale * sin(3.14159 * d);
-    p = mix(p, tgt, ed) + arc;
+    p += (vec3((aR.y - 0.5) * 9.0, (aR.z - 0.2) * 6.0, (aR.w - 0.5) * 4.0)) * uScale * 0.22 * ed;
 
     // leaving the stage: drift apart
     p += (aR.yzw - 0.5) * uScale * 0.9 * uOut;
@@ -45,7 +43,7 @@ const VERT = /* glsl */ `
     vec4 mv = viewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
     float toAlie = ease(clamp((s - uLast) * 1.5 - aR.x * 0.5, 0.0, 1.0));
-    float blue = max(toAlie, smoothstep(0.0, 0.25, d));
+    float blue = toAlie;
     vB = blue;
     vA = uAlpha * (0.5 + 0.5 * aR.z) * (0.2 + 0.8 * asb) * (1.0 - smoothstep(0.82, 1.0, d)) * (1.0 - uOut);
     float size = uSize * (0.8 + aR.w * 0.7) * (1.0 + blue * 0.3);
@@ -66,6 +64,17 @@ const FRAG = /* glsl */ `
 `;
 
 // the X: two strokes drawn on, then it scatters
+const XFRAG = /* glsl */ `
+  uniform vec3 uRedC;
+  varying float vA;
+  varying float vB;
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+    float a = smoothstep(0.5, 0.0, d);
+    gl_FragColor = vec4(uRedC * pow(a, 1.1) * vA * (1.5 + vB * 0.6), 1.0);
+  }
+`;
+
 const XVERT = /* glsl */ `
   attribute vec4 aX;
   attribute vec4 aR;
@@ -127,12 +136,12 @@ class Ghost {
     const xr = new Float32Array(N * 4);
     for (let i = 0; i < xr.length; i++) xr[i] = Math.random();
     xg.setAttribute('aR', new THREE.BufferAttribute(xr, 4));
-    this.xmark = mk(xg, XVERT, FRAG);
+    this.xmark = mk(xg, XVERT, XFRAG);
   }
   set(v) {
     const u = this.u;
     u.uOrigin.value.set(v.ox, v.oy, 0);
-    u.uTarget.value.set(v.tx, v.ty, v.tz ?? 0);
+    
     u.uScale.value = v.w;
     u.uAsm.value = v.asm;
     u.uDis.value = v.dis || 0;

@@ -280,7 +280,7 @@ export class Shape {
       if (ry) { const t = x * cy + z * sy; z = -x * sy + z * cy; x = t; }
       return [x - ox, y - oy, z];
     };
-    return { pos: out, w: maxx - minx, h: maxy - miny, tf };
+    return { pos: out, w: maxx - minx, h: maxy - miny, tf, ox, oy };
   }
 }
 
@@ -323,13 +323,8 @@ const ring3 = (R, tilt, spin = 0) => (t) => {
 export const SHAPES = {
   wordmark(ctx) {
     const s = new Shape(11);
-    if (ctx.portrait) {
-      const rt = rasterText(['A.L.I.E.', '2'], { family: ctx.font, weight: 560, lineGap: 0.98 });
-      s.text(rt, 0, 0, 6, 10);
-    } else {
-      const rt = rasterText(['A.L.I.E. 2'], { family: ctx.font, weight: 560 });
-      s.text(rt, 0, 0, 9.6, 10);
-    }
+    const rt = rasterText(['A.L.I.E.'], { family: ctx.font, weight: 560 });
+    s.text(rt, 0, 0, 8, 10);
     return s;
   },
   oneai(ctx) {
@@ -957,6 +952,124 @@ export const SHAPES = {
     return s;
   },
 
+  workNet() {
+    // A.L.I.E. with five connected places of work around it
+    const s = new Shape(141);
+    s.tint = 0.06;
+    s.sphere([0, 0, 0], 0.85, { w: 3000 });
+    s.tint = 0.45;
+    s.sphere([0, 0, 0], 0.85, { w: 800, vol: true });
+    s.tint = 1;
+    s.blob([0, 0, 0], 0.15, 420);
+    s.tint = 0.25;
+    s.path(ring3(1.2, 0.25), { d: 0.8 });
+    WORK_NODES.forEach((c, i) => {
+      const o = 0.12 + i * 0.16;
+      s.tint = 0.5;
+      s.circle(c[0], c[1], c[2], 0.2, { o, d: 1.4 });
+      s.tint = 1;
+      s.blob(c, 0.06, 150, { o });
+      s.path((t) => [c[0] * t, c[1] * t + Math.sin(t * Math.PI) * 0.12, c[2] * t], { o: [o, o + 0.1], d: 1.5, j: 0.008 });
+    });
+    return s;
+  },
+
+  mail() {
+    const s = new Shape(142);
+    const r = s.r;
+    s.tint = 0.06;
+    s.sphere([0, 0.3, 0], 0.7, { w: 2400 });
+    s.tint = 1;
+    s.blob([0, 0.3, 0], 0.13, 360);
+    const msg = (cx, cy, w, h, o, z = 0, d = 1) => {
+      s.rect(cx, cy, w, h, z, { o, d });
+      s.line([cx - w / 2, cy + h / 2, z], [cx, cy + h * 0.02, z], { o, d: d * 0.9 });
+      s.line([cx + w / 2, cy + h / 2, z], [cx, cy + h * 0.02, z], { o, d: d * 0.9 });
+    };
+    const spots = [];
+    for (let i = 0; i < 15; i++) {
+      const a = (i / 15) * TAU + 0.2;
+      const c = [Math.cos(a) * (2.5 + (i % 3) * 0.45), 0.3 + Math.sin(a) * (1.5 + (i % 2) * 0.25), (r() - 0.5) * 0.8];
+      spots.push(c);
+      s.tint = 0.03;
+      msg(c[0], c[1], 0.5, 0.33, 0);
+    }
+    [0, 4, 8, 11].forEach((k, j) => {
+      const c = spots[k];
+      const o = 0.3 + j * 0.1;
+      s.tint = 1;
+      s.rect(c[0], c[1], 0.72, 0.52, c[2], { o, d: 1.6 });
+      s.line([0, 0.3, 0], [c[0], c[1], c[2]], { o: [o, o + 0.05], d: 0.9, j: 0.01 });
+    });
+    // the reply, written for the user
+    s.tint = 0.1;
+    s.rect(0, -2.55, 2.0, 1.0, 0, { o: 0.72, d: 1.2 });
+    s.tint = 0.9;
+    [0, 1, 2, 3].forEach((i) => s.line([-0.8, -2.25 - i * 0.2, 0], [0.8 - i * 0.28, -2.25 - i * 0.2, 0], { o: [0.76 + i * 0.06, 0.82 + i * 0.06], d: 1.2 }));
+    return s;
+  },
+
+  files() {
+    const s = new Shape(143);
+    const r = s.r;
+    s.tint = 0.06;
+    s.sphere([0, 0.3, 0], 0.7, { w: 2400 });
+    s.tint = 1;
+    s.blob([0, 0.3, 0], 0.13, 360);
+    const page = (cx, cy, w, h, o, z = 0, d = 1) => {
+      const f = w * 0.3;
+      s.poly([[cx - w / 2, cy - h / 2, z], [cx + w / 2, cy - h / 2, z], [cx + w / 2, cy + h / 2 - f, z], [cx + w / 2 - f, cy + h / 2, z], [cx - w / 2, cy + h / 2, z]], true, { o, d });
+      s.line([cx - w * 0.28, cy + h * 0.1, z], [cx + w * 0.28, cy + h * 0.1, z], { o, d: d * 0.7 });
+      s.line([cx - w * 0.28, cy - h * 0.08, z], [cx + w * 0.1, cy - h * 0.08, z], { o, d: d * 0.7 });
+    };
+    const spots = [];
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * TAU + 0.35;
+      const c = [Math.cos(a) * (2.3 + (i % 3) * 0.5), 0.3 + Math.sin(a) * (1.45 + (i % 2) * 0.3), (r() - 0.5) * 0.8];
+      spots.push(c);
+      s.tint = 0.03;
+      page(c[0], c[1], 0.38, 0.5, 0);
+      const n = spots[(i + 3) % Math.max(i, 1)];
+      if (i > 3 && n) s.line(c, n, { d: 0.18, j: 0.01 });
+    }
+    [1, 5, 9, 12, 14].forEach((k, j) => {
+      const c = spots[k];
+      const o = 0.28 + j * 0.07;
+      s.tint = 1;
+      s.rect(c[0], c[1], 0.58, 0.72, c[2], { o, d: 1.5 });
+      s.line([0, 0.3, 0], c, { o: [o, o + 0.05], d: 0.9, j: 0.01 });
+    });
+    s.tint = 0.1;
+    s.rect(0, -2.55, 2.0, 1.0, 0, { o: 0.72, d: 1.2 });
+    s.tint = 0.9;
+    [0, 1, 2, 3].forEach((i) => s.line([-0.8, -2.25 - i * 0.2, 0], [0.8 - i * 0.25, -2.25 - i * 0.2, 0], { o: [0.76 + i * 0.06, 0.82 + i * 0.06], d: 1.2 }));
+    return s;
+  },
+
+  cal() {
+    const s = new Shape(144);
+    const W = 5.0, H = 3.1, cols = 5;
+    const cw = W / cols;
+    s.tint = 0.04;
+    s.rect(0, 0, W, H, 0, { d: 1.2 });
+    for (let i = 1; i < cols; i++) s.line([-W / 2 + i * cw, -H / 2, 0], [-W / 2 + i * cw, H / 2, 0], { d: 0.6 });
+    for (let j = 1; j < 5; j++) s.line([-W / 2, -H / 2 + (j * H) / 5, 0], [W / 2, -H / 2 + (j * H) / 5, 0], { d: 0.45 });
+    s.line([-W / 2, H / 2 - 0.5, 0], [W / 2, H / 2 - 0.5, 0], { d: 1 });
+    for (let i = 0; i < cols; i++) s.fillRect(-W / 2 + (i + 0.5) * cw, H / 2 - 0.25, 0.4, 0.07, 0, { d: 2 });
+    const ev = (col, y0, h) => s.fillRect(-W / 2 + (col + 0.5) * cw, H / 2 - 0.5 - y0 - h / 2, cw * 0.78, h, 0, { d: 1.6 });
+    ev(0, 0.2, 0.55); ev(0, 1.3, 0.5); ev(1, 0.5, 0.45); ev(1, 1.9, 0.5); ev(2, 0.1, 0.6); ev(2, 1.2, 0.8);
+    ev(3, 0.7, 0.5); ev(4, 0.15, 0.5); ev(4, 1.55, 0.55);
+    // tomorrow is highlighted, the new appointment lands in the free slot
+    s.tint = 1;
+    s.rect(-W / 2 + 1.5 * cw, -0.25, cw * 0.96, H - 0.55, 0, { o: 0.3, d: 1.2 });
+    s.fillRect(-W / 2 + 1.5 * cw, H / 2 - 0.5 - 1.2 - 0.275, cw * 0.78, 0.5, 0, { o: [0.8, 0.95], d: 2.4 });
+    s.tint = 0.5;
+    s.sphere([-W / 2 - 0.1, H / 2 + 0.55, 0], 0.38, { w: 700 });
+    s.tint = 1;
+    s.line([-W / 2 - 0.1, H / 2 + 0.55, 0], [-W / 2 + 1.5 * cw, H / 2 - 1.75, 0], { o: [0.6, 0.8], d: 1.6, j: 0.01 });
+    return s;
+  },
+
   oneNet() {
     // orb with ten satellites; connection lines carry w for a reveal
     const s = new Shape(111);
@@ -981,6 +1094,8 @@ export const SHAPES = {
     return s;
   },
 };
+
+export const WORK_NODES = [[-2.8, 0.9, 0.2], [0, 2.1, -0.2], [2.8, 0.9, 0.2], [-1.9, -1.8, 0.2], [1.9, -1.8, 0.2]];
 
 export const ONE_NET_ANCHORS = (() => {
   const R = 3.0, out = [];
@@ -1012,8 +1127,8 @@ export function ghostPoints(shape, M) {
   }
   return out;
 }
-export function wordShape(text, font, seed) {
-  const rt = rasterText([text], { family: font, weight: 560 });
+export function wordShape(text, font, seed, track = -0.02) {
+  const rt = rasterText([text], { family: font, weight: 560, track });
   const s = new Shape(seed);
   s.tint = 0;
   s.text(rt, 0, 0, 1, 100);

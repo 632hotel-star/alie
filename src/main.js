@@ -9,9 +9,13 @@ import './style.css';
 
 import { SHAPES } from './shapes.js';
 import { createGhosts } from './ghosts.js';
+import { PText } from './ptext.js';
 import { createStory, NONE } from './story.js';
 import { applyLang, detectLang } from './i18n.js';
 import * as audio from './audio.js';
+
+// hoisted so the static (no WebGL) path can use it too
+var pulseThen = (id, fn) => fn();
 
 const FONT = "'Geist Variable', 'IBM Plex Sans Arabic', system-ui, sans-serif";
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -66,6 +70,7 @@ const group = new THREE.Group();
 scene.add(group);
 
 const BASE = new THREE.Color(0.93, 0.94, 0.92);
+const RED = new THREE.Color(1.0, 0.17, 0.2); // red only means removed, replaced or not supported
 const BLUE = new THREE.Color(0.2, 0.44, 1.0); // electric / deep blue, the A.L.I.E. colour
 const ACCENT = new THREE.Color(0.46, 0.68, 1.0); // lighter blue for wave fronts
 
@@ -310,8 +315,8 @@ function fit(sh, lay, dir, b) {
     if (!p) { cy = -visH * 0.07; bw = visW * 0.46; bh = visH * 0.5; }
     else { cy = visH * 0.08; bw = visW * 0.94; bh = visH * 0.4; }
   } else if (lay === 'top') {
-    if (!p) { cy = visH * 0.24; bw = visW * 0.34; bh = visH * 0.38; }
-    else { cy = visH * 0.22; bw = visW * 0.8; bh = visH * 0.34; }
+    if (!p) { cy = visH * 0.27; bw = visW * 0.3; bh = visH * 0.33; }
+    else { cy = visH * 0.25; bw = visW * 0.7; bh = visH * 0.3; }
   } else if (!p) { cx = dir * visW * 0.225; bw = visW * 0.44; bh = visH * 0.74; }
   else { cy = visH * 0.2; bw = visW * 0.94; bh = visH * 0.44; }
   return { x: cx, y: cy + (portrait ? b.kym ?? b.ky ?? 0 : b.ky || 0) * visH, s: Math.min(bw / sh.w, bh / sh.h, cap) * 0.93 * (portrait ? b.ksm ?? b.ks ?? 1 : b.ks ?? 1) };
@@ -527,7 +532,7 @@ function frame(now) {
   /* chapters: copy reveal, scrubbed behaviours, anchors */
   group.updateMatrixWorld(true);
   ghostList.forEach((g) => g.hide());
-  let energy = 0;
+  ptList.forEach((q) => q.hide());
   chapters.forEach((c) => {
     const near = y > c.top - vh * 1.2 && y < c.top + c.h + vh * 0.2;
     if (!near) {
@@ -544,9 +549,11 @@ function frame(now) {
       c.el.classList.toggle('in', on);
     }
     if (c.anchors) projectAnchors(c, p, y);
-    if (c.ghosts) energy = Math.max(energy, updateGhosts(c, p));
+    if (c.ghosts) updateGhosts(c, p);
+    if (c.pt) updatePTexts(c, p);
   });
-  U.uEnergy.value += (energy - U.uEnergy.value) * (1 - Math.exp(-dt * 6));
+  updateControls(dt, y);
+  U.uEnergy.value = 0;
   const seek = chapters.find((c) => c.id === 'seek');
   if (seek) AU.uWork.value += (sm(seek.top + seek.range * 0.55, seek.top + seek.range * 0.8, y) - AU.uWork.value) * (1 - Math.exp(-dt * 2));
 
@@ -555,30 +562,147 @@ function frame(now) {
 }
 
 function updateGhosts(c, p) {
-  let energy = 0;
   c.ghosts.forEach((gs) => {
     const g = ghosts[gs.id];
     if (!g) return;
     const v = gs.tl(p);
     const pos = portrait ? gs.pm : gs.pd;
     const x = pos[0] * visW * (gs.flip && root.dir === 'rtl' ? -1 : 1), y = pos[1] * visH, w = pos[2] * visW;
-    if (gs.tgt) {
-      const sh = cache.get(gs.tgt.shape);
-      const q = sh ? sh.tf(gs.tgt.p) : [0, 0, 0];
-      tmpV.set(q[0], q[1], q[2]);
-    } else tmpV.set(0, 0, 0);
-    tmpV.applyMatrix4(group.matrixWorld);
-    g.set({ ox: x, oy: y, w, asm: v.asm, xp: v.x, xo: v.xo, dis: v.dis, state: v.state, out: v.out, tx: tmpV.x, ty: tmpV.y, tz: tmpV.z });
-    energy = Math.max(energy, Math.sin(Math.PI * clamp(((v.dis || 0) - 0.2) / 0.75)) * ((v.dis || 0) < 0.999 ? 1 : 0), Math.sin(Math.PI * (v.fin || 0)) * (1 - (v.out || 0)));
-    if (gs.label) {
-      const op = gs.labelOp(p);
-      const sx = (x / (visW * 0.5)) * 0.5 + 0.5;
-      const sy = -(y / (visH * 0.5)) * 0.5 + 0.5;
-      gs.label.style.transform = `translate3d(${(sx * innerWidth).toFixed(1)}px, ${(sy * innerHeight).toFixed(1)}px, 0) translate(-50%, -50%)`;
-      gs.label.style.opacity = String(op);
-    }
+    g.set({ ox: x, oy: y, w, asm: v.asm, xp: v.x, xo: v.xo, dis: v.dis, state: v.state, out: v.out });
   });
-  return energy;
+}
+
+/* ---- text and marks made of particles, placed on invisible DOM slots ---- */
+const pts = {};
+let ptList = [];
+const ptState = {};
+const tRect = (el) => {
+  const r = document.createRange();
+  r.selectNodeContents(el);
+  return r.getBoundingClientRect();
+};
+const toWorld = (px, py) => [(px / innerWidth * 2 - 1) * visW * 0.5, -(py / innerHeight * 2 - 1) * visH * 0.5];
+const H = {
+  get visW() { return visW; },
+  get visH() { return visH; },
+  get portrait() { return portrait; },
+  get dir() { return root.dir === 'rtl' ? -1 : 1; },
+  get ar() { return lang === 'ar'; },
+  get vh() { return innerHeight; },
+  fw: (f) => (portrait ? f * 1.9 : f) * visW,
+  rect: (el) => el.getBoundingClientRect(),
+  textRect: tRect,
+  node(shape, local, out = 0.5) {
+    const sh = cache.get(shape);
+    if (!sh) return { cx: 0, cy: 0 };
+    const q = sh.tf(local);
+    tmpV.set(q[0], q[1], q[2]).applyMatrix4(group.matrixWorld);
+    const dx = tmpV.x - group.position.x, dy = tmpV.y - group.position.y, l = Math.hypot(dx, dy) || 1;
+    return { cx: tmpV.x + (dx / l) * out, cy: tmpV.y + (dy / l) * out * 0.7 };
+  },
+  top(i, n) {
+    const dir = root.dir === 'rtl' ? -1 : 1;
+    if (!portrait) return { cx: dir * 0.225 * visW + (i - (n - 1) / 2) * 0.15 * visW, cy: 0.355 * visH };
+    return { cx: (i - (n - 1) / 2) * 0.3 * visW, cy: 0.385 * visH };
+  },
+};
+
+function updatePTexts(c, p) {
+  c.pt.forEach((spec) => {
+    const pt = pts[spec.id];
+    if (!pt) return;
+    let cx, cy, w, v, r;
+    if (spec.slot) {
+      if (!spec.el) spec.el = c.el.querySelector(spec.slot);
+      if (!spec.el) return;
+      r = tRect(spec.el);
+      if (r.width < 2) return;
+      if (r.bottom < -40 || r.top > innerHeight + 40) return;
+      [cx, cy] = toWorld(r.left + r.width / 2, r.top + r.height / 2);
+      w = (r.width / innerWidth) * visW;
+      pt.setContent(spec.opts(spec.el, H, r));
+      v = spec.tl(p, H, r);
+    } else {
+      if (!spec.el) spec.el = c.el.querySelector(spec.text);
+      v = spec.tl(p, H);
+      if (!v || v.asm <= 0.002) return;
+      const t = spec.el.textContent.trim();
+      pt.setContent({ text: t, weight: 560, track: lang === 'ar' ? 0 : -0.02, M: spec.M ?? 1500 });
+      cx = v.pos.cx; cy = v.pos.cy; w = v.pos.w;
+    }
+    if (!v) return;
+    if (spec.hoverEl) {
+      const st = (ptState[spec.id] ||= { h: 0, target: 0, pulse: 1 });
+      if (!st.bound) {
+        st.bound = true;
+        const el = c.el.querySelector(spec.hoverEl);
+        const on = () => (st.target = 1), off = () => (st.target = 0);
+        el.addEventListener('pointerenter', on);
+        el.addEventListener('pointerleave', off);
+        el.addEventListener('focus', on);
+        el.addEventListener('blur', off);
+        el.addEventListener('click', (e) => { e.preventDefault(); st.pulse = 0; audio.blip(4); });
+      }
+      st.h += (st.target - st.h) * 0.18;
+      if (st.pulse < 1) st.pulse = Math.min(1, st.pulse + 0.03);
+      v = { ...v, hover: Math.max(v.hover || 0, st.h), pulse: st.pulse < 1 ? st.pulse : v.pulse };
+    }
+    pt.set({ cx, cy, w, asm: v.asm, out: v.out, blue: v.blue, hover: v.hover, pulse: v.pulse, strike: v.strike, alpha: v.alpha });
+  });
+}
+
+/* ---- language and sound: particles at the top, only before the visitor starts to scroll ---- */
+const ctl = {};
+let toolsEl = null;
+function initControls() {
+  toolsEl = document.querySelector('.tools');
+  ['lang', 'snd'].forEach((k) => {
+    const el = document.getElementById(k);
+    const c = (ctl[k] = { el, pt: pts[k], text: '', asm: 0, hover: 0, target: 0, pulse: 1, pending: null, blue: 0 });
+    const on = () => (c.target = 1), off = () => (c.target = 0);
+    el.addEventListener('pointerenter', on);
+    el.addEventListener('pointerleave', off);
+    el.addEventListener('focus', on);
+    el.addEventListener('blur', off);
+  });
+  pulseThen = (id, fn) => {
+    const c = ctl[id];
+    if (!c) return fn();
+    c.pulse = 0;
+    c.pending = fn;
+  };
+}
+function updateControls(dt, y) {
+  if (!toolsEl) return;
+  const show = 1 - sm(8, 110, y);
+  toolsEl.classList.toggle('off', show < 0.05);
+  Object.values(ctl).forEach((c) => {
+    const text = c.el.textContent.trim();
+    if (text && text !== c.text) {
+      c.text = text;
+      c.pt.setContent({ text, weight: 560, track: lang === 'ar' ? 0 : -0.01, M: 1500, halo: true, tw: 240, hw: 150 });
+      c.asm = 0;
+    }
+    c.asm = Math.min(1, c.asm + dt * 1.5);
+    c.hover += (c.target - c.hover) * (1 - Math.exp(-dt * 9));
+    if (c.pulse < 1) {
+      c.pulse = Math.min(1, c.pulse + dt / 0.6);
+      if (c.pending && c.pulse > 0.4) {
+        const f = c.pending;
+        c.pending = null;
+        f();
+      }
+    }
+    const r = tRect(c.el);
+    if (r.width < 2 || show < 0.02) return;
+    const [cx, cy] = toWorld(r.left + r.width / 2, r.top + r.height / 2);
+    const isSnd = c.el.id === 'snd';
+    c.blue += ((isSnd && audio.isOn() ? 1 : 0) - c.blue) * (1 - Math.exp(-dt * 6));
+    c.pt.set({
+      cx, cy, w: (r.width / innerWidth) * visW, asm: c.asm, out: (1 - show) * 0.9, alpha: 0.9 * (0.15 + 0.85 * show),
+      blue: c.blue, hover: c.hover * show, pulse: c.pulse < 1 ? c.pulse : 0,
+    });
+  });
 }
 
 function projectAnchors(c, p, y) {
@@ -625,19 +749,18 @@ function resetLangShapes() {
 function bindUI() {
   const snd = document.getElementById('snd');
   const lng = document.getElementById('lang');
-  const cta = document.querySelector('.cta');
   const refreshSound = () => {
     const on = audio.isOn();
     snd.setAttribute('aria-pressed', String(on));
     snd.dataset.i18n = on ? 'nav.sound.on' : 'nav.sound.off';
     applyLang(lang);
   };
-  snd.addEventListener('click', () => {
+  const doSound = () => {
     audio.toggle();
     refreshSound();
     audio.blip(0);
-  });
-  lng.addEventListener('click', async () => {
+  };
+  const doLang = async () => {
     lang = lang === 'ar' ? 'en' : 'ar';
     applyLang(lang);
     resetLangShapes();
@@ -646,23 +769,13 @@ function bindUI() {
       resetLangShapes();
     }
     try { requestAnimationFrame(measure); } catch (err) { /* static mode */ }
-  });
-  cta?.addEventListener('click', (e) => {
-    e.preventDefault();
-    audio.blip(4);
-    cta.classList.remove('pressed');
-    void cta.offsetWidth;
-    cta.classList.add('pressed');
-  });
+  };
+  snd.addEventListener('click', () => pulseThen('snd', doSound));
+  lng.addEventListener('click', () => pulseThen('lang', doLang));
   document.querySelector('.mark')?.addEventListener('click', (e) => {
     e.preventDefault();
     if (lenis) lenis.scrollTo(0, { duration: 2.2 });
     else window.scrollTo({ top: 0 });
-  });
-  cta?.addEventListener('pointermove', (e) => {
-    const r = cta.getBoundingClientRect();
-    cta.style.setProperty('--mx', `${e.clientX - r.left}px`);
-    cta.style.setProperty('--my', `${e.clientY - r.top}px`);
   });
 }
 
@@ -687,7 +800,13 @@ bindUI();
     /* continue with fallback font */
   }
   resize();
-  ghosts = createGhosts(scene, { uTime: U.uTime, uScalePx: U.uScalePx, uSize: U.uSize, uBase: U.uBase, uBlue: U.uBlue }, FONT, GM);
+  ghosts = createGhosts(scene, { uTime: U.uTime, uScalePx: U.uScalePx, uSize: U.uSize, uBase: U.uBase, uBlue: U.uBlue, uRedC: { value: RED } }, FONT, GM);
+  const ptShared = { uTime: U.uTime, uScalePx: U.uScalePx, uSize: U.uSize, uBase: U.uBase, uBlueC: U.uBlue, uRedC: { value: RED }, uPtr: U.uPtr };
+  ['lang', 'snd', 'priceOld', 'priceNew', 'cta', 'mac', 'win', 'mob', 'gmail', 'drive', 'docs', 'sheets', 'cal'].forEach((id) => {
+    pts[id] = new PText(scene, ptShared, FONT);
+  });
+  ptList = Object.values(pts);
+  initControls();
   ghostList = Object.values(ghosts);
   getShape('dust');
   getShape('wordmark');

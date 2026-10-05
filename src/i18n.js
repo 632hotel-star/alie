@@ -1,5 +1,5 @@
 // Every visible string lives here, in both languages. Only product and brand names
-// (A.L.I.E. 2, ChatGPT, Claude, Gemini, Alexa, Siri, Home Assistant) stay as they are.
+// (A.L.I.E., ChatGPT, Claude, Gemini, Alexa, Siri, Home Assistant) stay as they are.
 export const STRINGS = {
   en: {
     'nav.sound.on': 'Sound on',
@@ -8,7 +8,7 @@ export const STRINGS = {
     'hero.tag': 'Your AI. Always there. Always evolving.',
 
     'memory.h': 'Persistent memory',
-    'memory.p': "A.L.I.E. 2 doesn't start from zero every time. It remembers what matters, keeps learning from you, and builds on it.",
+    'memory.p': "A.L.I.E. doesn't start from zero every time. It remembers what matters, keeps learning from you, and builds on it.",
     'memory.d1': 'Day 1',
     'memory.d2': 'Day 7',
     'memory.d3': 'Day 30',
@@ -46,6 +46,18 @@ export const STRINGS = {
     'dev.5': 'Sensors',
     'dev.6': 'Scenes',
     'claim.home': 'Your home no longer needs a separate assistant.',
+
+    'work.h': 'Your digital world. One intelligence.',
+    'work.p': 'Your email, files, calendar and information — accessible to A.L.I.E. when you give it permission.',
+    'work.say1': 'Check my emails and see if anything needs a reply.',
+    'work.say2': 'Write the right reply for them.',
+    'work.say3': 'Search my files for the project I worked on last month.',
+    'work.say4': 'What do I have tomorrow?',
+    'work.say5': "Find me a time that doesn't clash with my schedule.",
+    'work.note1': 'It reads and searches your inbox, understands whole conversations, summarises what matters, and writes replies and new emails for you.',
+    'work.note2': 'It finds files, reads and understands them, summarises and compares them, and uses what is inside while it works.',
+    'work.note3': "It checks your day, plans around it and sets appointments that don't clash with your schedule.",
+    'work.perm': 'You connect your accounts and grant permission. A.L.I.E. works only within what you allow.',
 
     'study.h': 'It turns your course into a learning experience.',
     'study.p': 'Drop in a PDF. A.L.I.E. reads it, understands it and builds everything you need to learn it.',
@@ -126,36 +138,40 @@ export const STRINGS = {
     'node.9': 'Automations',
     'node.10': 'Memory',
     'one.ai': 'ONE AI.',
-    'one.connected': 'Everything connected.',
+    'one.connected': 'One intelligence. Every capability.',
 
     'before.h': 'Before you start',
+    'plat.h': 'Works on Mac only',
+    'plat.p': 'The current version of A.L.I.E. is built for Mac only. Other systems may come later, but A.L.I.E. 1 does not include a phone app or a Windows version.',
+    'plat.ok': 'Supported',
+    'plat.no': 'Not supported',
     'before.1.h': 'Home Assistant',
     'before.1.p': 'Controlling your home requires Home Assistant to be installed and set up in advance, with your devices and integrations ready.',
     'before.2.h': 'Prototype',
-    'before.2.p': 'A.L.I.E. 2 is still an early prototype in development. Some features may not work fully, and improvements, fixes and updates keep arriving.',
+    'before.2.p': 'A.L.I.E. is still an early prototype in development. Some features may not work fully, and improvements, fixes and updates keep arriving.',
     'before.3.h': 'API based',
     'before.3.p': 'Some capabilities rely on external APIs and services, such as AI models, voice, search, images and video.',
-    'before.4.h': 'Pay for what you use',
-    'before.4.p': "The cost of third-party services is not part of A.L.I.E. 2. You pay each provider's API cost based on your own usage.",
-    'before.5.h': 'Integrations',
-    'before.5.p': 'Some features need the service to be set up and connected, with the right permissions granted before you use them.',
+    'before.4.h': 'API costs',
+    'before.4.p': "You pay for external services according to your usage and each provider's prices.",
+    'before.5.h': 'Integrations and permissions',
+    'before.5.p': 'Features such as email, files, calendar and the smart home need you to connect your accounts and grant A.L.I.E. the right permissions.',
 
-    'cap.1': 'Memory',
-    'cap.2': 'Build',
-    'cap.3': 'Create',
-    'cap.4': 'Home',
-    'cap.5': 'Device',
-    'five.1': 'Five assistants.',
-    'five.2': 'Dozens of tools.',
-    'five.3': 'One intelligence.',
+    'five.1': 'Multiple tools.',
+    'five.2': 'Multiple assistants.',
+    'five.3': 'Replaced by one intelligence.',
+    'all.name': 'A.L.I.E.',
+    'all.sub': 'One intelligence replacing the fragmented stack.',
 
-    'end.s1': 'Everything you need.',
-    'end.s2': 'One AI that knows you.',
     'end.l1': 'A memory that knows you.',
     'end.l2': 'An intelligence that learns from you.',
     'end.l3': 'A system that acts for you.',
     'end.l4': 'A platform that evolves with you.',
-    'end.cta': 'Experience A.L.I.E.',
+    'offer.avail': 'The first version is available now.',
+    'price.old': '399 SAR',
+    'price.new': '39 SAR only',
+    'offer.off': 'Over 90% off',
+    'offer.limited': 'For a limited time',
+    'end.cta': 'Get A.L.I.E. 1 — 39 SAR',
   },
   ar: {
     'nav.sound.on': 'الصوت يعمل',
@@ -164,7 +180,7 @@ export const STRINGS = {
     'hero.tag': 'ذكاؤك الاصطناعي. حاضر دائماً. يتطور باستمرار.',
 
     'memory.h': 'ذاكرة دائمة',
-    'memory.p': 'A.L.I.E. 2 لا يبدأ من الصفر كل مرة. يتذكر المعلومات والسياقات المهمة ويتعلم منك باستمرار.',
+    'memory.p': 'A.L.I.E. لا يبدأ من الصفر كل مرة. يتذكر المعلومات والسياقات المهمة ويتعلم منك باستمرار.',
     'memory.d1': 'اليوم 1',
     'memory.d2': 'اليوم 7',
     'memory.d3': 'اليوم 30',
@@ -202,6 +218,18 @@ export const STRINGS = {
     'dev.5': 'الحساسات',
     'dev.6': 'المشاهد',
     'claim.home': 'منزلك لم يعد بحاجة إلى مساعد منفصل.',
+
+    'work.h': 'عالمك الرقمي، تحت تصرف ذكاء واحد.',
+    'work.p': 'بريدك، ملفاتك، تقويمك ومعلوماتك — A.L.I.E. يستطيع العمل معها عندما تسمح له بذلك.',
+    'work.say1': 'راجع إيميلاتي، وشوف إذا فيه شيء يحتاج ردي.',
+    'work.say2': 'اكتب لهم الرد المناسب.',
+    'work.say3': 'دوّر في ملفاتي عن المشروع اللي اشتغلت عليه الشهر الماضي.',
+    'work.say4': 'وش عندي بكرة؟',
+    'work.say5': 'رتّب لي موعد مناسب بدون ما يتعارض مع جدولي.',
+    'work.note1': 'يراجع بريدك ويبحث داخل الرسائل، ويفهم المحادثات السابقة، ويلخص المهم، ويكتب الردود والرسائل الجديدة نيابةً عنك.',
+    'work.note2': 'يبحث عن الملفات ويقرأها ويفهمها ويلخصها ويقارن بينها، ويستخدم ما فيها أثناء تنفيذ المهام.',
+    'work.note3': 'يطلع على جدولك، ويرتب الوقت، ويحدد مواعيد لا تتعارض مع برنامجك.',
+    'work.perm': 'تربط حساباتك بنفسك وتمنح الصلاحيات، فيعمل A.L.I.E. ضمن ما تسمح له به فقط.',
 
     'study.h': 'يحوّل منهجك إلى تجربة تعليمية كاملة.',
     'study.p': 'أرفق ملف PDF. يقرأه A.L.I.E. ويفهمه، ثم يبني كل ما تحتاجه لتتعلمه.',
@@ -282,36 +310,40 @@ export const STRINGS = {
     'node.9': 'الأتمتة',
     'node.10': 'الذاكرة',
     'one.ai': 'ذكاء واحد',
-    'one.connected': 'كل شيء متصل.',
+    'one.connected': 'ذكاء واحد. كل القدرات.',
 
     'before.h': 'قبل أن تبدأ',
+    'plat.h': 'يعمل على Mac فقط',
+    'plat.p': 'الإصدار الحالي من A.L.I.E. مصمم للعمل على أجهزة Mac فقط. دعم الأنظمة الأخرى قد يأتي مستقبلاً، لكن A.L.I.E. 1 لا يشمل تطبيقاً للجوال ولا نسخة Windows.',
+    'plat.ok': 'مدعوم',
+    'plat.no': 'غير مدعوم',
     'before.1.h': 'Home Assistant',
     'before.1.p': 'التحكم بالمنزل يتطلب Home Assistant مثبتاً ومجهزاً مسبقاً مع الأجهزة والتكاملات المطلوبة.',
     'before.2.h': 'نموذج أولي',
-    'before.2.p': 'A.L.I.E. 2 ما زال نموذجاً أولياً قيد التطوير. قد لا تعمل بعض الخصائص بشكل كامل، وستصل تحسينات وإصلاحات وتحديثات باستمرار.',
+    'before.2.p': 'A.L.I.E. ما زال نموذجاً أولياً قيد التطوير. قد لا تعمل بعض الخصائص بشكل كامل، وستصل تحسينات وإصلاحات وتحديثات باستمرار.',
     'before.3.h': 'يعتمد على الـ API',
     'before.3.p': 'بعض القدرات تعتمد على واجهات API وخدمات خارجية مثل نماذج الذكاء الاصطناعي والصوت والبحث والصور والفيديو.',
-    'before.4.h': 'ادفع مقابل ما تستخدم',
-    'before.4.p': 'تكاليف خدمات الشركات الخارجية ليست ضمن A.L.I.E. 2. تدفع تكلفة الـ API الخاصة بكل خدمة بناءً على استخدامك.',
-    'before.5.h': 'التكاملات',
-    'before.5.p': 'بعض المميزات تحتاج إعداد وربط الخدمة المطلوبة وإعطاء الصلاحيات المناسبة قبل استخدامها.',
+    'before.4.h': 'تكاليف الـ API',
+    'before.4.p': 'تتحمل تكلفة الخدمات الخارجية حسب استخدامك وأسعار كل مزود.',
+    'before.5.h': 'التكاملات والصلاحيات',
+    'before.5.p': 'بعض القدرات مثل البريد والملفات والتقويم والمنزل الذكي تحتاج إلى ربط الحسابات والخدمات ومنح A.L.I.E. الصلاحيات المناسبة.',
 
-    'cap.1': 'الذاكرة',
-    'cap.2': 'البناء',
-    'cap.3': 'الإبداع',
-    'cap.4': 'المنزل',
-    'cap.5': 'الجهاز',
-    'five.1': 'خمسة مساعدين.',
-    'five.2': 'عشرات الأدوات.',
-    'five.3': 'ذكاء واحد.',
+    'five.1': 'عدة أدوات.',
+    'five.2': 'عدة مساعدين.',
+    'five.3': 'يستبدلها ذكاء واحد.',
+    'all.name': 'A.L.I.E.',
+    'all.sub': 'ذكاء واحد يستبدل كل هذا التشتت.',
 
-    'end.s1': 'كل ما تحتاجه.',
-    'end.s2': 'ذكاء واحد يعرفك.',
     'end.l1': 'ذاكرة تعرفك.',
     'end.l2': 'ذكاء يتعلم منك.',
     'end.l3': 'نظام ينفذ من أجلك.',
     'end.l4': 'ومنصة تتطور معك.',
-    'end.cta': 'جرّب A.L.I.E.',
+    'offer.avail': 'النسخة الأولى متوفرة الآن',
+    'price.old': '399 ريال',
+    'price.new': '39 ريال فقط',
+    'offer.off': 'خصم أكثر من 90%',
+    'offer.limited': 'لفترة محدودة',
+    'end.cta': 'احصل على A.L.I.E. 1 — 39 ريال',
   },
 };
 
@@ -326,7 +358,7 @@ export function detectLang() {
 }
 
 // keep the brand mark and its dot together inside right-to-left sentences
-const isolate = (s) => s.replace(/A\.L\.I\.E\.(?: 2)?/g, '\u2066$&\u2069');
+const isolate = (s) => s.replace(/A\.L\.I\.E\.(?: [12])?/g, '\u2066$&\u2069');
 export function applyLang(lang) {
   const raw = STRINGS[lang];
   const dict = lang === 'ar' ? Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, isolate(v)])) : raw;
@@ -340,7 +372,7 @@ export function applyLang(lang) {
     el.dataset.full = dict[el.dataset.say] || '';
     el._t = undefined;
   });
-  document.title = 'A.L.I.E. 2';
+  document.title = 'A.L.I.E.';
   try {
     localStorage.setItem('alie-lang', lang);
   } catch (e) {
