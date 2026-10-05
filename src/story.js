@@ -10,6 +10,7 @@ const sm = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 const lerp = (a, b, t) => a + (b - a) * t;
+const lin = (a, b, x) => clamp((x - a) / (b - a));
 const keyframes = (kf, p) => {
   if (p <= kf[0][0]) return kf[0][1];
   for (let i = 1; i < kf.length; i++) {
@@ -35,6 +36,13 @@ function typed(el, full, p0, p1, p) {
   if (el.parentElement) el.parentElement.classList.toggle('typing', typing);
   if (el.parentElement) el.parentElement.classList.toggle('shown', p > p0 - 0.02);
 }
+
+const show = (node, a, b, p) => {
+  const k = sm(a, b, p);
+  node.style.opacity = String(k);
+  node.style.transform = `translate3d(0, ${(1 - k) * 14}px, 0)`;
+  return k;
+};
 
 export function createStory(root, api) {
   const $ = (sel, el = root) => el.querySelector(sel);
@@ -79,18 +87,26 @@ export function createStory(root, api) {
     const days = $$('.days li', el);
     const fill = $('.fill', el);
     const note = $('.note', el);
-    const grow = (p) => keyframes([[0, 0.12], [0.14, 0.16], [0.36, 0.34], [0.6, 0.6], [0.86, 1.04]], p);
+    const claim = $('.claim', el);
+    const grow = (p) => keyframes([[0, 0.12], [0.08, 0.16], [0.22, 0.34], [0.38, 0.6], [0.54, 1.04]], p);
+    const lay = { lay: 'side', grow, jit: 0.012, ks: 0.82, ky: -0.06, ksm: 0.74, kym: -0.09 };
     return {
       beats: [
-        { s: 'brain', at: 0, lay: 'side', grow, jit: 0.012 },
-        { s: 'brain', at: 1, lay: 'side', grow, jit: 0.012 },
+        { s: 'brain', at: 0, ...lay },
+        { s: 'brain', at: 1, ...lay },
       ],
+      ghosts: [{
+        id: 'chatgpt', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.46],
+        tl: (p) => ({ asm: sm(0.56, 0.64, p), wave: lin(0.66, 0.75, p) * 1.3, dis: lin(0.76, 0.9, p) }),
+      }],
       update(p) {
-        const idx = p < 0.3 ? 0 : p < 0.5 ? 1 : p < 0.74 ? 2 : 3;
+        const idx = p < 0.16 ? 0 : p < 0.3 ? 1 : p < 0.46 ? 2 : 3;
         mark(days, idx);
         idxChange('d', idx, el);
-        fill.style.setProperty('--f', String(clamp((p - 0.06) / 0.82)));
+        fill.style.setProperty('--f', String(clamp((p - 0.03) / 0.5)));
         setText(note, dict()[`memory.n${idx + 1}`]);
+        const k = show(claim, 0.9, 0.95, p);
+        $('.copy', el).classList.toggle('claimed', k > 0.5);
       },
     };
   });
@@ -120,18 +136,26 @@ export function createStory(root, api) {
   def('control', (el) => {
     const say = $('.say .typed', el);
     const steps = $$('.steps li', el);
+    const claim = $('.claim', el);
     const grow = (p) => 0.06 + 0.96 * sm(0.34, 0.9, p);
+    const lay = { lay: 'side', grow, ks: 0.86, ky: -0.05, ksm: 0.76, kym: -0.09 };
     return {
       beats: [
-        { s: 'laptop', at: 0, lay: 'side', grow },
-        { s: 'laptop', at: 1, lay: 'side', grow },
+        { s: 'laptop', at: 0, ...lay },
+        { s: 'laptop', at: 1, ...lay },
       ],
+      ghosts: [{
+        id: 'siri', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.3],
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, dis: lin(0.34, 0.48, p) }),
+      }],
       update(p) {
         typed(say, say.dataset.full, 0.06, 0.28, p);
         const idx = p < 0.32 ? -1 : p < 0.46 ? 0 : p < 0.6 ? 1 : p < 0.72 ? 2 : p < 0.86 ? 3 : 4;
         mark(steps, idx);
         idxChange('s', idx, el);
         steps.forEach((li) => (li.parentElement.dataset.on = idx >= 0 ? '1' : '0'));
+        const k = show(claim, 0.5, 0.56, p);
+        $('.copy', el).classList.toggle('claimed', k > 0.5);
       },
     };
   });
@@ -140,13 +164,19 @@ export function createStory(root, api) {
   def('home', (el) => {
     const say = $('.say .typed', el);
     const devs = $$('.devs li', el);
+    const claim = $('.claim', el);
     const grow = (p) => 0.1 + 0.95 * sm(0.34, 0.9, p);
     const marks = [0.2, 0.37, 0.53, 0.67, 0.81, 0.93];
+    const lay = { lay: 'side', grow, ks: 0.86, ky: -0.05, ksm: 0.76, kym: -0.09 };
     return {
       beats: [
-        { s: 'house', at: 0, lay: 'side', grow },
-        { s: 'house', at: 1, lay: 'side', grow },
+        { s: 'house', at: 0, ...lay },
+        { s: 'house', at: 1, ...lay },
       ],
+      ghosts: [{
+        id: 'alexa', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.36],
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, dis: lin(0.36, 0.5, p) }),
+      }],
       update(p) {
         typed(say, say.dataset.full, 0.06, 0.28, p);
         const g = grow(p);
@@ -154,6 +184,8 @@ export function createStory(root, api) {
         marks.forEach((m, i) => { if (g >= m + 0.03) n = i + 1; });
         devs.forEach((li, i) => { li.dataset.s = i < n ? 'done' : ''; });
         idxChange('h', n - 1, el);
+        const k = show(claim, 0.56, 0.62, p);
+        $('.copy', el).classList.toggle('claimed', k > 0.5);
       },
     };
   });
@@ -186,31 +218,39 @@ export function createStory(root, api) {
   def('create', (el) => {
     const say = $('.say .typed', el);
     const types = $$('.types li', el);
+    const claim = $('.claim', el);
     const pulse = (p) => -0.1 + 1.25 * sm(0.62, 0.76, p);
+    const k = { lay: 'side', ks: 0.84, ky: -0.05, ksm: 0.76, kym: -0.09 };
     return {
       beats: [
-        { s: 'site', at: 0.0, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'doc', at: 0.1, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'slides', at: 0.2, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'sheet', at: 0.3, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'image', at: 0.4, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'video', at: 0.5, lay: 'side', hout: 0.1, hin: 0.1 },
-        { s: 'site', at: 0.66, lay: 'side', grow: pulse, pulse: true, hout: 0.55 },
-        { s: 'siteMin', at: 0.97, lay: 'side', hin: 0.1 },
+        { s: 'site', at: 0.0, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'doc', at: 0.1, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'slides', at: 0.2, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'sheet', at: 0.3, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'image', at: 0.4, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'video', at: 0.5, ...k, hout: 0.1, hin: 0.1 },
+        { s: 'site', at: 0.66, ...k, grow: pulse, pulse: true, hout: 0.55 },
+        { s: 'siteMin', at: 0.97, ...k, hin: 0.1 },
       ],
+      ghosts: [{
+        id: 'claude', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.36],
+        tl: (p) => ({ asm: sm(0.5, 0.58, p), wave: lin(0.6, 0.7, p) * 1.3, dis: lin(0.7, 0.84, p) }),
+      }],
       update(p) {
         const idx = p < 0.05 ? 0 : p < 0.15 ? 1 : p < 0.25 ? 2 : p < 0.35 ? 3 : p < 0.45 ? 4 : p < 0.57 ? 5 : -1;
         mark(types, idx);
         idxChange('t', idx, el);
         types[0].parentElement.dataset.on = idx >= 0 ? '1' : '0';
         const d = dict();
-        if (p < 0.7) {
+        if (p < 0.715) {
           say.dataset.full = d['create.say1'];
           typed(say, say.dataset.full, 0.54, 0.62, p);
         } else {
           say.dataset.full = d['create.say2'];
           typed(say, say.dataset.full, 0.72, 0.8, p);
         }
+        const kk = show(claim, 0.9, 0.95, p);
+        $('.copy', el).classList.toggle('claimed', kk > 0.5);
       },
     };
   });
@@ -243,21 +283,64 @@ export function createStory(root, api) {
     };
   });
 
+  /* ---------------- nothing to replace ---------------- */
+  def('seek', (el) => {
+    const mon = $$('.mon li', el);
+    const nrf = $('.nrf', el);
+    const because = $('.because', el);
+    const nothing = $('.nothing', el);
+    const msgs = $('.seekmsg', el);
+    const exs = $$('.ex .typed', el);
+    const exWrap = $('.ex', el);
+    const g = (p) => 0.08 + 0.96 * sm(0.08, 0.34, p) - 0.96 * sm(0.54, 0.64, p);
+    const jit = (p) => 0.012 + 0.045 * sm(0.3, 0.4, p) * (1 - sm(0.5, 0.56, p));
+    const lay = { lay: 'text', grow: g, jit };
+    return {
+      beats: [
+        { s: 'seeker', at: 0, ...lay },
+        { s: 'seeker', at: 1, ...lay },
+      ],
+      update(p) {
+        const idx = p < 0.05 ? -1 : p < 0.14 ? 0 : p < 0.24 ? 1 : p < 0.34 ? 2 : p < 0.44 ? 3 : 4;
+        mark(mon, idx);
+        idxChange('m', idx, el);
+        show(nrf, 0.6, 0.65, p);
+        show(because, 0.68, 0.72, p);
+        show(nothing, 0.74, 0.78, p);
+        msgs.style.opacity = String(1 - sm(0.86, 0.9, p));
+        exWrap.style.opacity = String(sm(0.88, 0.9, p));
+        const d = dict();
+        exs.forEach((n, i) => {
+          n.dataset.full = d[`seek.ex${i + 1}`];
+          typed(n, n.dataset.full, 0.9 + i * 0.022, 0.92 + i * 0.022, p);
+        });
+      },
+    };
+  });
+
   /* ---------------- creative ---------------- */
   def('creative', (el) => {
     const kinds = $$('.kinds li', el);
+    const claim = $('.claim', el);
     const sweep = (p) => -0.1 + 1.25 * sm(0.36, 0.62, p);
+    const k = { lay: 'side', ks: 0.84, ky: -0.05, ksm: 0.76, kym: -0.09 };
     return {
       beats: [
-        { s: 'easel', at: 0, lay: 'side', jit: 0.015 },
-        { s: 'image', at: 0.45, lay: 'side', grow: sweep, pulse: true, hout: 0.3 },
-        { s: 'video', at: 0.95, lay: 'side' },
-        { s: 'video', at: 1, lay: 'side' },
+        { s: 'easel', at: 0, ...k, jit: 0.015 },
+        { s: 'image', at: 0.45, ...k, grow: sweep, pulse: true, hout: 0.3 },
+        { s: 'video', at: 0.95, ...k },
+        { s: 'video', at: 1, ...k },
       ],
+      ghosts: [{
+        id: 'gemini', flip: true, pd: [0.225, 0.35, 0.23], pm: [0, 0.37, 0.4],
+        tl: (p) => ({ asm: sm(0.02, 0.1, p), wave: lin(0.12, 0.2, p) * 1.3, state: lin(0.22, 0.36, p) + lin(0.5, 0.64, p), dis: lin(0.76, 0.9, p) }),
+      }],
       update(p) {
         const idx = p < 0.3 ? 2 : p < 0.7 ? 0 : 1;
         kinds.forEach((li, i) => { li.dataset.s = i === idx ? 'on' : ''; });
         idxChange('k', idx, el);
+        const kk = show(claim, 0.9, 0.95, p);
+        $('.copy', el).classList.toggle('claimed', kk > 0.5);
       },
     };
   });
@@ -284,6 +367,22 @@ export function createStory(root, api) {
         for (let i = 1; i < at.length; i++) if (p >= (at[i] + at[i - 1]) / 2 + 0.01) idx = i;
         setText(label, states[idx]);
         idxChange('i', idx, el);
+      },
+    };
+  });
+
+  /* ---------------- meet A.L.I.E. ---------------- */
+  def('meet', (el) => {
+    const parts = [$('h2', el), ...$$('.nots li', el)];
+    const win = [[0.46, 0.52], [0.58, 0.64], [0.66, 0.72], [0.74, 0.8]];
+    return {
+      beats: [
+        { s: 'orb', at: 0, lay: 'side', amp: 0.07 },
+        { s: 'human', at: 0.4, lay: 'side', stagger: 0.85, amp: 0.012, hout: 0.2, hin: 0.1 },
+        { s: 'human', at: 1, lay: 'side', amp: 0.012 },
+      ],
+      update(p) {
+        parts.forEach((n, i) => show(n, win[i][0], win[i][1], p));
       },
     };
   });
@@ -319,24 +418,51 @@ export function createStory(root, api) {
     update() {},
   }));
 
+  /* ---------------- everything becomes A.L.I.E. ---------------- */
+  def('all', (el) => {
+    const caps = $$('.cap', el);
+    const lines = $$('.five li', el);
+    const names = ['chatgpt', 'claude', 'gemini', 'alexa', 'siri'];
+    const targets = [[0, 2.62, 0], [1.0, 0.8, 0], [-1.0, 0.8, 0], [0, -1.2, 0], [0, 1.45, 0.05]];
+    const pd = [[-0.27, 0.2, 0.15], [0.27, 0.2, 0.15], [-0.28, -0.1, 0.15], [0.28, -0.1, 0.15], [0, 0.41, 0.13]];
+    const pm = [[-0.25, 0.3, 0.22], [0.25, 0.3, 0.22], [-0.25, -0.24, 0.22], [0.25, -0.24, 0.22], [0, 0.4, 0.2]];
+    const grow = (p) => keyframes([[0, 0.08], [0.2, 0.08], [0.27, 0.3], [0.33, 0.3], [0.4, 0.5], [0.46, 0.5], [0.53, 0.7], [0.59, 0.7], [0.66, 0.9], [0.72, 0.9], [0.79, 1.1]], p);
+    const lay = { s: 'human', lay: 'center', grow, ks: 1.38, ksm: 1.12, amp: 0.012, stagger: 0.9 };
+    return {
+      beats: [
+        { ...lay, at: 0 },
+        { ...lay, at: 0.88, stagger: undefined },
+      ],
+      ghosts: names.map((id, i) => {
+        const s = 0.13 + 0.13 * i;
+        return {
+          id, pd: pd[i], pm: pm[i], tgt: { shape: 'human', p: targets[i] }, label: caps[i],
+          labelOp: (p) => sm(s + 0.12, s + 0.17, p),
+          tl: (p) => ({ asm: sm(0.0, 0.1, p), wave: lin(s - 0.04, s + 0.04, p) * 1.3, dis: lin(s + 0.02, s + 0.13, p) }),
+        };
+      }),
+      update(p) {
+        lines.forEach((li, i) => show(li, 0.82 + i * 0.045, 0.86 + i * 0.045, p));
+      },
+    };
+  });
+
   /* ---------------- finale ---------------- */
   def('end', (el) => {
     const lines = $$('.lines li', el);
     const cta = $('.cta', el);
     const mk = $('.endmark', el);
+    const sub = $('.endsub', el);
     return {
       beats: [
-        { s: 'orb', at: 0.0, lay: 'top', stagger: 0.92, amp: 0.07, spin: 0.05, hout: 0.05, hin: 0.0 },
+        { s: 'orb', at: 0.0, lay: 'top', stagger: 0.6, amp: 0.07, spin: 0.05, hout: 0.05, hin: 0.0 },
         { s: 'orb', at: 1, lay: 'top', amp: 0.07, spin: 0.05 },
       ],
       update(p) {
-        const show = (node, a, b) => {
-          node.style.opacity = String(sm(a, b, p));
-          node.style.transform = `translate3d(0, ${(1 - sm(a, b, p)) * 14}px, 0)`;
-        };
-        show(mk, 0.18, 0.3);
-        lines.forEach((li, i) => show(li, 0.32 + i * 0.1, 0.42 + i * 0.1));
-        show(cta, 0.74, 0.86);
+        show(mk, 0.16, 0.26, p);
+        show(sub, 0.24, 0.34, p);
+        lines.forEach((li, i) => show(li, 0.38 + i * 0.09, 0.47 + i * 0.09, p));
+        show(cta, 0.76, 0.86, p);
         cta.style.pointerEvents = p > 0.78 ? 'auto' : 'none';
       },
     };

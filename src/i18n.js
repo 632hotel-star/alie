@@ -52,6 +52,10 @@ export const STRINGS = {
     'iface.h1': "A.L.I.E. doesn't have one interface.",
     'iface.h2': 'It becomes the interface it needs.',
 
+    'seek.ex1': 'Watch this price and tell me if it drops.',
+    'seek.ex2': 'Keep an eye on when this product is back in stock.',
+    'seek.ex3': 'Check my order status and tell me if it changes.',
+    'seek.ex4': 'Remind me when this happens, not at a set time.',
     'one.connected': 'Everything connected.',
 
     'before.h': 'Before you start',
@@ -124,6 +128,10 @@ export const STRINGS = {
     'iface.h1': 'لا يملك A.L.I.E. واجهة واحدة.',
     'iface.h2': 'بل يصبح الواجهة التي تحتاجها.',
 
+    'seek.ex1': 'راقب هذا السعر وأخبرني إذا انخفض.',
+    'seek.ex2': 'تابع توفر هذا المنتج.',
+    'seek.ex3': 'شيّك على حالة طلبي وأخبرني إذا تغيرت.',
+    'seek.ex4': 'ذكّرني عندما يحدث هذا، وليس في وقت محدد.',
     'one.connected': 'كل شيء متصل.',
 
     'before.h': 'قبل أن تبدأ',

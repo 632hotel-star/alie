@@ -8,6 +8,7 @@ import '@fontsource/ibm-plex-sans-arabic/600.css';
 import './style.css';
 
 import { SHAPES } from './shapes.js';
+import { createGhosts } from './ghosts.js';
 import { createStory, NONE } from './story.js';
 import { applyLang, detectLang } from './i18n.js';
 import * as audio from './audio.js';
@@ -65,7 +66,8 @@ const group = new THREE.Group();
 scene.add(group);
 
 const BASE = new THREE.Color(0.93, 0.94, 0.92);
-const ACCENT = new THREE.Color(0.56, 0.89, 0.81);
+const BLUE = new THREE.Color(0.2, 0.44, 1.0); // electric / deep blue, the A.L.I.E. colour
+const ACCENT = new THREE.Color(0.46, 0.68, 1.0); // lighter blue for wave fronts
 
 const VERT = /* glsl */ `
   attribute vec4 aA;
@@ -74,19 +76,26 @@ const VERT = /* glsl */ `
   uniform float uMix, uStagger, uTime, uSwirl;
   uniform float uGA, uGB, uModeA, uModeB;
   uniform float uAmpA, uAmpB, uJitA, uJitB;
-  uniform float uSize, uScalePx, uKeep, uDim;
+  uniform float uSize, uScalePx, uKeep, uDim, uEnergy;
   uniform vec3 uPtr;
   uniform float uPtrAmt;
   varying float vAlpha;
   varying float vFlash;
+  varying float vBlue;
   float ease(float x) { return x * x * (3.0 - 2.0 * x); }
   void main() {
+    // w packs order (0..1) and a blue flag (+2)
+    float tA = step(1.5, aA.w);
+    float tB = step(1.5, aB.w);
+    float oA = aA.w - 2.0 * tA;
+    float oB = aB.w - 2.0 * tB;
+
     float m = clamp(uMix * (1.0 + uStagger) - aR.x * uStagger, 0.0, 1.0);
     float em = ease(m);
 
     // reveal: points above the grow value rest at the core and fly out as it passes them
-    float rvA = mix(1.0, smoothstep(0.0, 0.07, uGA - aA.w), uModeA);
-    float rvB = mix(1.0, smoothstep(0.0, 0.07, uGB - aB.w), uModeB);
+    float rvA = mix(1.0, smoothstep(0.0, 0.07, uGA - oA), uModeA);
+    float rvB = mix(1.0, smoothstep(0.0, 0.07, uGB - oB), uModeB);
     vec3 pa = aA.xyz * rvA;
     vec3 pb = aB.xyz * rvB;
     pa *= 1.0 + uAmpA * sin(uTime * 1.5 - length(pa) * 2.4 + aR.z * 0.4);
@@ -99,9 +108,13 @@ const VERT = /* glsl */ `
     p += vec3(sin(aR.x * 100.0 + uTime * 0.6), cos(aR.y * 100.0 + uTime * 0.5), sin(aR.z * 100.0 + uTime * 0.7)) * jit;
 
     float vis = mix(rvA, rvB, em);
-    float fA = exp(-pow((aA.w - uGA) * 16.0, 2.0));
-    float fB = exp(-pow((aB.w - uGB) * 16.0, 2.0));
+    float fA = exp(-pow((oA - uGA) * 16.0, 2.0));
+    float fB = exp(-pow((oB - uGB) * 16.0, 2.0));
     float flash = mix(fA, fB, em);
+
+    // blue: flagged points, plus a share that lights up while energy flows into A.L.I.E.
+    float hush = fract(aR.y * 13.7 + aR.z * 5.3);
+    float blue = max(mix(tA, tB, em), step(hush, uEnergy * 0.6));
 
     vec4 wp = modelMatrix * vec4(p, 1.0);
     vec2 d = wp.xy - uPtr.xy;
@@ -112,24 +125,27 @@ const VERT = /* glsl */ `
     vec4 mv = viewMatrix * wp;
     gl_Position = projectionMatrix * mv;
 
-    float size = uSize * (0.7 + aR.y * 0.75) * (0.3 + 0.7 * vis) * (1.0 + flash * 1.7 + push * 0.8);
+    float size = uSize * (0.7 + aR.y * 0.75) * (0.3 + 0.7 * vis) * (1.0 + flash * 1.7 + push * 0.8 + blue * 0.3 + uEnergy * 0.25);
     float depth = clamp(1.0 - (-mv.z - 7.0) / 10.0, 0.35, 1.0);
     gl_PointSize = clamp(size * uScalePx / -mv.z, 1.0, 26.0);
-    vAlpha = (0.5 + 0.5 * aR.z) * vis * depth * uDim;
+    vAlpha = (0.5 + 0.5 * aR.z) * vis * depth * uDim * (1.0 + blue * 0.15);
     vFlash = clamp(flash * vis, 0.0, 1.0);
+    vBlue = blue * vis;
     if (aR.w > uKeep) { gl_PointSize = 0.0; gl_Position = vec4(2.0, 2.0, 2.0, 1.0); }
   }
 `;
 const FRAG = /* glsl */ `
-  uniform vec3 uBase, uAccent;
+  uniform vec3 uBase, uAccent, uBlue;
   varying float vAlpha;
   varying float vFlash;
+  varying float vBlue;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     float a = smoothstep(0.5, 0.0, d);
-    a *= a;
-    vec3 c = mix(uBase, uAccent, vFlash);
-    gl_FragColor = vec4(c * a * vAlpha * (0.9 + vFlash * 0.8), 1.0);
+    float shape = mix(a * a, pow(a, 1.25), vBlue);
+    vec3 c = mix(uBase, uBlue, vBlue);
+    c = mix(c, uAccent, vFlash);
+    gl_FragColor = vec4(c * shape * vAlpha * (0.9 + vFlash * 0.8 + vBlue * 0.25), 1.0);
   }
 `;
 
@@ -161,7 +177,7 @@ const U = {
   uAmpA: { value: 0.015 }, uAmpB: { value: 0.015 }, uJitA: { value: 0.012 }, uJitB: { value: 0.012 },
   uSize: { value: coarse ? 0.027 : 0.023 }, uScalePx: { value: 1000 }, uKeep: { value: 1 }, uDim: { value: 1 },
   uPtr: { value: new THREE.Vector3(99, 99, 0) }, uPtrAmt: { value: 0 },
-  uBase: { value: BASE }, uAccent: { value: ACCENT },
+  uBase: { value: BASE }, uAccent: { value: ACCENT }, uBlue: { value: BLUE }, uEnergy: { value: 0 },
 };
 const mat = new THREE.ShaderMaterial({
   uniforms: U, vertexShader: VERT, fragmentShader: FRAG,
@@ -186,7 +202,7 @@ ambGeo.setAttribute('position', new THREE.BufferAttribute(ambPos, 3));
 ambGeo.setAttribute('aR', new THREE.BufferAttribute(ambR, 3));
 const AU = {
   uTime: U.uTime, uScalePx: U.uScalePx, uBox: { value: new THREE.Vector3(14, 8, 6) }, uAlpha: { value: 0.32 },
-  uPtr: U.uPtr, uPtrAmt: U.uPtrAmt, uBase: U.uBase, uKeep: U.uKeep,
+  uPtr: U.uPtr, uPtrAmt: U.uPtrAmt, uBase: U.uBase, uBlue: U.uBlue, uKeep: U.uKeep, uWork: { value: 0 },
 };
 const ambient = new THREE.Points(
   ambGeo,
@@ -194,28 +210,37 @@ const ambient = new THREE.Points(
     uniforms: AU, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending,
     vertexShader: /* glsl */ `
       attribute vec3 aR;
-      uniform float uTime, uScalePx, uAlpha, uKeep, uPtrAmt;
+      uniform float uTime, uScalePx, uAlpha, uKeep, uPtrAmt, uWork;
       uniform vec3 uBox, uPtr;
       varying float vA;
+      varying float vW;
       void main() {
         vec3 p = position * uBox;
         p.x += sin(uTime * 0.07 + aR.x * 40.0) * 0.35;
-        p.y += cos(uTime * 0.06 + aR.y * 40.0) * 0.3 + mod(uTime * 0.02 * (0.3 + aR.z), 1.0) * 0.0;
+        p.y += cos(uTime * 0.06 + aR.y * 40.0) * 0.3;
+        // background work: a share of the dust keeps circling, blue, after the agent scene
+        float worker = step(aR.x, 0.2) * uWork;
+        float ang = uTime * (0.1 + aR.z * 0.16) + aR.y * 6.2832;
+        float rad = 0.28 + aR.y * 0.62;
+        vec2 orbit = vec2(cos(ang) * uBox.x * 0.5 * rad, sin(ang) * uBox.y * 0.5 * rad);
+        p.xy = mix(p.xy, orbit, worker);
         vec2 d = p.xy - uPtr.xy;
         float push = exp(-dot(d, d) * 0.9) * uPtrAmt;
         p.xy += normalize(d + 1e-4) * push * 0.6;
         vec4 mv = viewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        gl_PointSize = clamp((0.011 + aR.z * 0.012) * uScalePx / -mv.z, 1.0, 5.0);
-        vA = uAlpha * (0.4 + 0.6 * aR.y) * (aR.x > uKeep ? 0.0 : 1.0);
+        gl_PointSize = clamp((0.011 + aR.z * 0.012 + worker * 0.006) * uScalePx / -mv.z, 1.0, 5.0);
+        vA = uAlpha * (0.4 + 0.6 * aR.y) * (aR.x > uKeep ? 0.0 : 1.0) * (1.0 + worker * 1.6);
+        vW = worker;
       }`,
     fragmentShader: /* glsl */ `
-      uniform vec3 uBase;
+      uniform vec3 uBase, uBlue;
       varying float vA;
+      varying float vW;
       void main() {
         float d = length(gl_PointCoord - 0.5);
         float a = smoothstep(0.5, 0.0, d);
-        gl_FragColor = vec4(uBase * a * a * vA, 1.0);
+        gl_FragColor = vec4(mix(uBase, uBlue, vW) * a * a * vA, 1.0);
       }`,
   }),
 );
@@ -274,7 +299,7 @@ function measure() {
 /* Layout: where the shape lives on screen                             */
 /* ------------------------------------------------------------------ */
 let aspect = 1, visH = 1, visW = 1;
-function fit(sh, lay, dir) {
+function fit(sh, lay, dir, b) {
   const p = aspect < 1.05;
   let cx = 0, cy = 0, bw = 1, bh = 1, cap = 1.25;
   if (lay === 'bg') return { x: 0, y: 0, s: 1 };
@@ -285,11 +310,11 @@ function fit(sh, lay, dir) {
     if (!p) { cy = -visH * 0.07; bw = visW * 0.46; bh = visH * 0.5; }
     else { cy = visH * 0.08; bw = visW * 0.94; bh = visH * 0.4; }
   } else if (lay === 'top') {
-    if (!p) { cy = visH * 0.2; bw = visW * 0.4; bh = visH * 0.46; }
+    if (!p) { cy = visH * 0.24; bw = visW * 0.34; bh = visH * 0.38; }
     else { cy = visH * 0.22; bw = visW * 0.8; bh = visH * 0.34; }
   } else if (!p) { cx = dir * visW * 0.225; bw = visW * 0.44; bh = visH * 0.74; }
   else { cy = visH * 0.2; bw = visW * 0.94; bh = visH * 0.44; }
-  return { x: cx, y: cy, s: Math.min(bw / sh.w, bh / sh.h, cap) * 0.93 };
+  return { x: cx, y: cy + (portrait ? b.kym ?? b.ky ?? 0 : b.ky || 0) * visH, s: Math.min(bw / sh.w, bh / sh.h, cap) * 0.93 * (portrait ? b.ksm ?? b.ks ?? 1 : b.ks ?? 1) };
 }
 
 /* ------------------------------------------------------------------ */
@@ -367,6 +392,9 @@ let lastBeatKey = '';
 let ema = 16, frames = 0, lastCheck = 0, downgrades = 0;
 let lastY = 0, vel = 0;
 const chapterIn = new WeakMap();
+let ghosts = {};
+let ghostList = [];
+const GM = [1800, 2800, 3800, 5200][tier];
 const tmpV = new THREE.Vector3();
 
 function setShapes(a, b) {
@@ -467,7 +495,7 @@ function frame(now) {
 
   /* layout target, mixed across the morph, then damped */
   const dir = root.dir === 'rtl' ? -1 : 1;
-  const fa = fit(shA, A.lay, dir), fb = fit(shB, B.lay, dir);
+  const fa = fit(shA, A.lay, dir, A), fb = fit(shB, B.lay, dir, B);
   const tx = lerp(fa.x, fb.x, em), ty = lerp(fa.y, fb.y, em), ts = lerp(fa.s, fb.s, em);
   const k = inited ? 1 - Math.exp(-dt * 5) : 1;
   lay.x += (tx - lay.x) * k;
@@ -498,6 +526,8 @@ function frame(now) {
 
   /* chapters: copy reveal, scrubbed behaviours, anchors */
   group.updateMatrixWorld(true);
+  ghostList.forEach((g) => (g.points.visible = false));
+  let energy = 0;
   chapters.forEach((c) => {
     const near = y > c.top - vh * 1.2 && y < c.top + c.h + vh * 0.2;
     if (!near) {
@@ -514,10 +544,41 @@ function frame(now) {
       c.el.classList.toggle('in', on);
     }
     if (c.anchors) projectAnchors(c, p, y);
+    if (c.ghosts) energy = Math.max(energy, updateGhosts(c, p));
   });
+  U.uEnergy.value += (energy - U.uEnergy.value) * (1 - Math.exp(-dt * 6));
+  const seek = chapters.find((c) => c.id === 'seek');
+  if (seek) AU.uWork.value += (sm(seek.top + seek.range * 0.55, seek.top + seek.range * 0.8, y) - AU.uWork.value) * (1 - Math.exp(-dt * 2));
 
   renderer.render(scene, camera);
   if (frames === 2) document.body.classList.add('gl-ready');
+}
+
+function updateGhosts(c, p) {
+  let energy = 0;
+  c.ghosts.forEach((gs) => {
+    const g = ghosts[gs.id];
+    if (!g) return;
+    const v = gs.tl(p);
+    const pos = portrait ? gs.pm : gs.pd;
+    const x = pos[0] * visW * (gs.flip && root.dir === 'rtl' ? -1 : 1), y = pos[1] * visH, w = pos[2] * visW;
+    if (gs.tgt) {
+      const sh = cache.get(gs.tgt.shape);
+      const q = sh ? sh.tf(gs.tgt.p) : [0, 0, 0];
+      tmpV.set(q[0], q[1], q[2]);
+    } else tmpV.set(0, 0, 0);
+    tmpV.applyMatrix4(group.matrixWorld);
+    g.set({ x, y, w, asm: v.asm, wave: v.wave, dis: v.dis, state: v.state, tx: tmpV.x, ty: tmpV.y, tz: tmpV.z });
+    energy = Math.max(energy, Math.sin(Math.PI * clamp((v.dis - 0.2) / 0.75)) * (v.dis < 0.999 ? 1 : 0));
+    if (gs.label) {
+      const op = gs.labelOp(p);
+      const sx = (x / (visW * 0.5)) * 0.5 + 0.5;
+      const sy = -(y / (visH * 0.5)) * 0.5 + 0.5;
+      gs.label.style.transform = `translate3d(${(sx * innerWidth).toFixed(1)}px, ${(sy * innerHeight).toFixed(1)}px, 0) translate(-50%, -50%)`;
+      gs.label.style.opacity = String(op);
+    }
+  });
+  return energy;
 }
 
 function projectAnchors(c, p, y) {
@@ -611,6 +672,8 @@ bindUI();
     /* continue with fallback font */
   }
   resize();
+  ghosts = createGhosts(scene, { uTime: U.uTime, uScalePx: U.uScalePx, uSize: U.uSize, uBase: U.uBase, uBlue: U.uBlue }, FONT, GM);
+  ghostList = Object.values(ghosts);
   getShape('dust');
   getShape('wordmark');
   const order = [...new Set(beats.map((b) => b.s))].filter((s) => s !== 'dust' && s !== 'wordmark');

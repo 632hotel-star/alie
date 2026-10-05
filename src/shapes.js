@@ -78,10 +78,40 @@ export class Shape {
     this.parts = [];
     this.r = rng(seed);
     this.xf = { rx: 0, ry: 0, rz: 0 };
+    this.tint = 0.05; // share of points in the following parts that carry the blue flag (w + 2)
   }
   add(w, fn) {
-    if (w > 0) this.parts.push([w, fn]);
+    if (w > 0) {
+      const tf = this.tint;
+      this.parts.push([w, tf > 0 ? (r, q) => { fn(r, q); if (r() < tf) q[3] += 2; } : fn]);
+    }
     return this;
+  }
+  /** tapered capsule along a to b. shell: outer skin, vol: filled inside. flat squashes depth. */
+  limb(a, b, r0, r1, o = {}) {
+    const [ax, ay, az = 0] = a;
+    const [bx, by, bz = 0] = b;
+    let ux = bx - ax, uy = by - ay, uz = bz - az;
+    const len = Math.hypot(ux, uy, uz);
+    ux /= len; uy /= len; uz /= len;
+    let hx = 0, hy = 0, hz = 1;
+    if (Math.abs(uz) > 0.9) { hx = 1; hz = 0; }
+    let vx = uy * hz - uz * hy, vy = uz * hx - ux * hz, vz = ux * hy - uy * hx;
+    const vl = Math.hypot(vx, vy, vz); vx /= vl; vy /= vl; vz /= vl;
+    const wx = uy * vz - uz * vy, wy = uz * vx - ux * vz, wz = ux * vy - uy * vx;
+    const flat = o.flat ?? 1;
+    const f = ordFn(o.o ?? 0);
+    return this.add(o.w ?? len * 200, (r, q) => {
+      const t = r();
+      const rad = r0 + (r1 - r0) * t;
+      const ang = r() * TAU;
+      const k = o.vol ? Math.sqrt(r()) * 0.9 : 0.92 + 0.08 * r();
+      const c = Math.cos(ang) * rad * k, s = Math.sin(ang) * rad * k * flat;
+      q[0] = ax + ux * t * len + vx * c + wx * s;
+      q[1] = ay + uy * t * len + vy * c + wy * s;
+      q[2] = az + uz * t * len + vz * c + wz * s;
+      q[3] = f(q[0], q[1], q[2], t);
+    });
   }
   line(a, b, o = {}) {
     const [ax, ay, az = 0] = a;
@@ -263,6 +293,7 @@ function network(s, o) {
     nodes.push({ p, o: o.order(p, r) });
   }
   const seen = new Set();
+  s.tint = o.tintEdge ?? 0.05;
   const addEdge = (i, j) => {
     const key = i < j ? i * 1000 + j : j * 1000 + i;
     if (i === j || seen.has(key)) return;
@@ -278,7 +309,9 @@ function network(s, o) {
     for (let k = 1; k <= o.k; k++) if (d[k] && d[k][0] < o.maxD) addEdge(i, d[k][1]);
   });
   for (let i = 0; i < (o.far ?? 0); i++) addEdge(Math.floor(r() * nodes.length), Math.floor(r() * nodes.length));
+  s.tint = o.tintNode ?? 0.5;
   nodes.forEach((n) => s.blob(n.p, 0.035 + r() * 0.035, o.node ?? 34, { o: n.o }));
+  s.tint = 0.05;
 }
 
 /* ---------- catalogue ---------- */
@@ -379,6 +412,8 @@ export const SHAPES = {
       far: 16,
       node: 24,
       edge: 0.9,
+      tintNode: 0.65,
+      tintEdge: 0.12,
       inside: (r) => {
         const d = unit(r);
         const k = r() < 0.75 ? 1.7 : 0.8;
@@ -386,6 +421,7 @@ export const SHAPES = {
       },
       order: () => 0,
     });
+    s.tint = 1;
     s.blob([0, 0, 0], 0.18, 500);
     return s;
   },
@@ -399,6 +435,8 @@ export const SHAPES = {
       far: 24,
       node: 22,
       edge: 1,
+      tintNode: 0.7,
+      tintEdge: 0.14,
       inside: (r) => {
         const d = unit(r);
         const k = r() < 0.7 ? 1.85 : 0.5 + r() * 1.0;
@@ -406,23 +444,30 @@ export const SHAPES = {
       },
       order: () => 0,
     });
+    s.tint = 0.8;
     s.sphere([0, 0, 0], 0.5, { w: 900, vol: true });
     return s;
   },
 
   orb() {
     const s = new Shape(31);
+    s.tint = 0.06;
     s.sphere([0, 0, 0], 1.55, { w: 5200 });
-    s.sphere([0, 0, 0], 1.55, { w: 1100, vol: true });
+    s.tint = 0.4;
+    s.sphere([0, 0, 0], 1.55, { w: 1500, vol: true });
+    s.tint = 0.25;
     s.path(ring3(1.95, 0.35), { d: 1.4 });
     s.path(ring3(1.95, -0.5, 1), { d: 1 });
-    s.blob([0, 0, 0], 0.22, 600);
+    s.tint = 1;
+    s.blob([0, 0, 0], 0.24, 700);
     return s;
   },
 
   search() {
     const s = new Shape(32);
+    s.tint = 1;
     s.blob([0, 0, 0], 0.12, 800, { o: 0 });
+    s.tint = 0.12;
     [0.9, 1.7, 2.5, 3.3].forEach((R, i) => {
       s.sphere([0, 0, 0], R, { w: 1100 + i * 700, o: R / 3.4, thick: 0.05 });
     });
@@ -436,6 +481,7 @@ export const SHAPES = {
     const n = 4, g = 0.95, off = (n - 1) * g * 0.5;
     const r = s.r;
     const ord = (x, y, z) => (y + off) / (n * g) * 0.8 + 0.1;
+    s.tint = 0.3;
     for (let i = 0; i < n; i++)
       for (let j = 0; j < n; j++)
         for (let k = 0; k < n; k++) {
@@ -451,8 +497,11 @@ export const SHAPES = {
 
   evolve() {
     const s = new Shape(41);
+    s.tint = 0.08;
     s.sphere([0, 0, 0], 1.0, { w: 3200 });
+    s.tint = 1;
     s.blob([0, 0, 0], 0.14, 380);
+    s.tint = 0.2;
     s.path(ring3(1.42, 0.5), { d: 1.1 });
     s.path(ring3(1.42, -0.5, 2), { d: 1.1 });
     const dirs = [
@@ -467,6 +516,7 @@ export const SHAPES = {
       const R = 2.45 + 0.2 * (m % 2);
       const perp = [-v[1], v[0], 0];
       const bend = 0.2 * (m % 2 ? 1 : -1);
+      s.tint = 0.6;
       s.path((t) => {
         const rr = 1.02 + (R - 1.02) * t;
         const b = Math.sin(Math.PI * t) * bend;
@@ -475,6 +525,7 @@ export const SHAPES = {
       const c = [v[0] * R, v[1] * R, v[2] * R];
       const oo = o + 0.08;
       const kind = m % 6;
+      s.tint = 0.4;
       if (kind === 0) s.box(c[0], c[1], c[2], 0.36, 0.36, 0.36, { o: oo, d: 1.2 });
       else if (kind === 1) { s.circle(c[0], c[1], c[2], 0.26, { o: oo }); s.blob(c, 0.05, 90, { o: oo }); }
       else if (kind === 2) s.sphere(c, 0.2, { w: 330, o: oo });
@@ -503,9 +554,11 @@ export const SHAPES = {
     s.rect(0.9, cy - 0.05, 1.35, 1.5, 0, { o: 0.4 });
     for (let i = 0; i < 6; i++) s.line([0.35, cy + 0.5 - i * 0.2, 0], [0.35 + 1.0 - (i % 3) * 0.25, cy + 0.5 - i * 0.2, 0], { o: 0.45 + i * 0.05, d: 0.9 });
     s.fillRect(-0.85, cy - 0.7, 1.4, 0.1, 0, { o: [0.7, 0.9], d: 2 });
+    s.tint = 0.9;
     s.poly([[-0.2, cy - 0.25, 0], [0.05, cy - 0.55, 0], [-0.05, cy - 0.5, 0]], true, { o: 0.62, d: 1.5 });
     s.poly([[-0.12, cy - 0.05, 0.01], [0.0, cy - 0.17, 0.01], [0.28, cy + 0.15, 0.01]], false, { o: 0.96, d: 2.2 });
     // A.L.I.E. mini orb
+    s.tint = 0.4;
     s.sphere([2.55, 1.75, 0.3], 0.42, { w: 700 });
     s.path((t) => { const a = t * TAU; return [2.55 + 0.7 * Math.cos(a), 1.75 + 0.7 * Math.sin(a) * 0.35, 0.3 + 0.7 * Math.sin(a) * 0.9]; }, { d: 1 });
     return s;
@@ -528,6 +581,7 @@ export const SHAPES = {
     s.rect(-0.95, -0.2, 0.9, 0.7, D / 2, { d: 1 });
     s.line([-0.95, -0.55, D / 2], [-0.95, 0.15, D / 2], { d: 0.6 });
     s.rect(0.95, -0.62, 0.55, 0.96, D / 2, { d: 1 });
+    s.tint = 0.55;
     // lights
     [-0.95, 0, 0.95].forEach((x, i) => {
       s.sphere([x, y1 - 0.28, i % 2 ? 0.2 : -0.3], 0.11, { w: 260, o: 0.18 + i * 0.03 });
@@ -799,24 +853,108 @@ export const SHAPES = {
       q[0] = u[0] * R * 1.01; q[1] = u[1] * R * 1.01; q[2] = u[2] * R * 1.01;
       q[3] = dist(q[0], q[1], q[2]);
     });
+    s.tint = 1;
     s.blob(pivot.map((c) => c * R * 1.02), 0.05, 260, { o: 0.02 });
+    s.tint = 0.3;
     s.path((t) => { const a = t * TAU; return [2.6 * Math.cos(a), 2.6 * Math.sin(a) * 0.38, 2.6 * Math.sin(a) * 0.92]; }, { d: 0.9 });
     s.xf.rz = -0.35;
+    return s;
+  },
+
+  human() {
+    // abstract human built only from points: white skin, blue neural system inside
+    const s = new Shape(121);
+    const part = (a, b, r0, r1, w, ord, flat = 0.7) => {
+      s.tint = 0.03;
+      s.limb(a, b, r0, r1, { w: w * 0.66, flat });
+      s.tint = 0.6;
+      s.limb(a, b, r0 * 0.82, r1 * 0.82, { w: w * 0.34, flat, vol: true, o: ord });
+    };
+    // head: densest
+    s.tint = 0.03;
+    s.sphere([0, 2.62, 0], 0.4, { w: 1000, squash: 1.15, thick: 0.07 });
+    s.tint = 0.55;
+    s.sphere([0, 2.62, 0], 0.33, { w: 420, squash: 1.15, vol: true, o: 0.2 });
+    part([0, 2.2, 0], [0, 2.02, 0], 0.12, 0.15, 160, 0.2, 1);
+    // torso: second densest around the chest
+    part([0, 1.95, 0], [0, 1.2, 0], 0.58, 0.46, 1900, 1, 0.6);
+    part([0, 1.2, 0], [0, 0.55, 0], 0.45, 0.4, 820, 1, 0.62);
+    part([0, 0.55, 0], [0, 0.2, 0], 0.42, 0.36, 430, 0.8, 0.62);
+    for (const sx of [1, -1]) {
+      const arm = sx > 0 ? 0.4 : 0.6;
+      part([sx * 0.66, 1.8, 0], [sx * 0.92, 0.95, 0], 0.17, 0.14, 330, arm, 0.9);
+      part([sx * 0.92, 0.95, 0], [sx * 1.06, 0.18, 0.05], 0.13, 0.09, 270, arm, 0.9);
+      s.tint = 0.5;
+      s.blob([sx * 1.09, 0.06, 0.05], 0.065, 90, { o: arm });
+      part([sx * 0.22, 0.28, 0], [sx * 0.28, -1.0, 0], 0.27, 0.2, 540, 0.8, 0.85);
+      part([sx * 0.28, -1.0, 0], [sx * 0.27, -2.3, 0], 0.19, 0.11, 440, 0.8, 0.85);
+      part([sx * 0.27, -2.36, 0.04], [sx * 0.27, -2.42, 0.38], 0.1, 0.08, 90, 0.8, 0.8);
+      // nerves
+      s.tint = 1;
+      s.poly([[sx * 0.1, 1.72, 0], [sx * 0.66, 1.78, 0], [sx * 0.92, 0.95, 0], [sx * 1.08, 0.1, 0.05]], false, { o: arm, d: 1.7, j: 0.012 });
+      s.poly([[sx * 0.1, 0.4, 0], [sx * 0.24, 0.2, 0], [sx * 0.28, -1.0, 0], [sx * 0.27, -2.3, 0], [sx * 0.27, -2.4, 0.36]], false, { o: 0.8, d: 1.7, j: 0.012 });
+    }
+    // spine, brain, heart
+    s.tint = 1;
+    s.path((t) => [Math.sin(t * 9) * 0.03, 2.5 - 2.25 * t, 0], { o: 0.35, d: 2.2, j: 0.012 });
+    s.blob([0, 1.45, 0.05], 0.15, 800, { o: 1 });
+    s.circle(0, 1.45, 0.05, 0.3, { o: 1, d: 1.2 });
+    s.circle(0, 1.45, 0.05, 0.46, { o: 1, d: 0.5 });
+    network(s, {
+      count: 38, k: 2, maxD: 0.46, node: 26, tintNode: 1, tintEdge: 0.95, edge: 0.9,
+      inside: (r) => { const u = unit(r); const k = Math.cbrt(r()) * 0.3; return [u[0] * k, 2.62 + u[1] * k * 1.1, u[2] * k]; },
+      order: () => 0.2,
+    });
+    network(s, {
+      count: 80, k: 2, maxD: 0.5, node: 24, tintNode: 1, tintEdge: 0.9, edge: 0.9,
+      inside: (r) => { const u = unit(r); const k = Math.cbrt(r()); return [u[0] * 0.44 * k, 1.35 + u[1] * 0.8 * k, u[2] * 0.2 * k]; },
+      order: (p, r) => 0.88 + r() * 0.12,
+    });
+    return s;
+  },
+
+  seeker() {
+    // A.L.I.E. at the centre, hollow nodes appear around it while it searches
+    const s = new Shape(131);
+    s.tint = 0.06;
+    s.sphere([0, 0, 0], 0.85, { w: 3000 });
+    s.tint = 0.4;
+    s.sphere([0, 0, 0], 0.85, { w: 700, vol: true });
+    s.tint = 1;
+    s.blob([0, 0, 0], 0.14, 380);
+    s.tint = 0.2;
+    s.path(ring3(1.2, 0.25), { d: 0.9 });
+    const r = s.r;
+    for (let i = 0; i < 16; i++) {
+      const a = r() * TAU, rad = 1.7 + r() * 2.0;
+      const c = [Math.cos(a) * rad, Math.sin(a) * rad * 0.5, (r() - 0.5) * 1.4];
+      const o = 0.05 + (i / 16) * 0.85;
+      s.tint = 0.03;
+      s.circle(c[0], c[1], c[2], 0.17, { o, d: 1 });
+      s.circle(c[0], c[1], c[2], 0.28, { o, d: 0.35 });
+      s.tint = 0.4;
+      s.path((t) => [c[0] * (0.42 + 0.58 * t) * (1 - 0.1 * (1 - t)), c[1] * (0.42 + 0.58 * t), c[2] * t], { o, d: 0.28, j: 0.01 });
+    }
     return s;
   },
 
   oneNet() {
     // orb with ten satellites; connection lines carry w for a reveal
     const s = new Shape(111);
+    s.tint = 0.08;
     s.sphere([0, 0, 0], 1.0, { w: 2800 });
+    s.tint = 1;
     s.blob([0, 0, 0], 0.15, 380);
+    s.tint = 0.3;
     s.path(ring3(1.4, 0.1), { d: 0.8 });
     const R = 3.0;
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * TAU;
       const c = [Math.cos(a) * R, Math.sin(a) * R * 0.34 + Math.sin(a * 2) * 0.25, Math.sin(a) * R * 0.9];
+      s.tint = 0.35;
       s.sphere(c, 0.2, { w: 330 });
       s.circle(c[0], c[1], c[2], 0.34, { d: 0.6 });
+      s.tint = 0.8;
       const v = [c[0] * 0.33, c[1] * 0.33, c[2] * 0.33];
       s.path((t) => [v[0] + (c[0] - v[0]) * t, v[1] + (c[1] - v[1]) * t + Math.sin(t * Math.PI) * 0.1, v[2] + (c[2] - v[2]) * t], { o: [0.2, 0.8], d: 1.3 });
     }
@@ -842,4 +980,23 @@ export function globeAnchors() {
     out.push([2.6 * Math.cos(a), 2.6 * Math.sin(a) * 0.38, 2.6 * Math.sin(a) * 0.92]);
   }
   return out;
+}
+
+/** normalised point cloud (width 1) for floating words and frames */
+export function ghostPoints(shape, M) {
+  const b = shape.build(M);
+  const out = new Float32Array(M * 3);
+  for (let i = 0; i < M; i++) {
+    out[i * 3] = b.pos[i * 4] / b.w;
+    out[i * 3 + 1] = b.pos[i * 4 + 1] / b.w;
+    out[i * 3 + 2] = b.pos[i * 4 + 2] / b.w;
+  }
+  return out;
+}
+export function wordShape(text, font, seed) {
+  const rt = rasterText([text], { family: font, weight: 560 });
+  const s = new Shape(seed);
+  s.tint = 0;
+  s.text(rt, 0, 0, 1, 100);
+  return s;
 }
