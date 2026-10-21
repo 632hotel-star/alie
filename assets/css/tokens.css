@@ -1,0 +1,86 @@
+/* BetterMe landing: design tokens. Dark is the designed default (the logo lives on ink);
+   light mode is the same engraving printed on marble. One accent (brand blue), gold only for the final stage. */
+:root {
+  color-scheme: dark;
+  /* ground */
+  --ink: #0A0D16;        /* page background */
+  --ink-2: #111625;      /* raised plates */
+  --ink-3: #1A2033;      /* hairlines on dark */
+  /* marble */
+  --marble: #F7F7F8;     /* figure, display text on dark */
+  --marble-2: #E6E8EE;
+  --stone: #A3A9B8;      /* secondary text on dark, hatching */
+  --stone-2: #6B7284;    /* muted text on dark */
+  --graphite: #2A2F3D;
+  /* accent */
+  --blue: #0060F8;
+  --blue-deep: #0A3FA6;
+  --blue-soft: rgba(0, 96, 248, .14);
+  --blue-line: rgba(0, 96, 248, .55);
+  /* gold: final stage only */
+  --gold-1: #FFF1B8; --gold-2: #E4B94A; --gold-3: #9A6B12; --gold-text: #D9B04C;
+  /* semantic */
+  --bg: var(--ink);
+  --bg-2: var(--ink-2);
+  --fg: var(--marble);
+  --fg-2: var(--stone);
+  --fg-3: var(--stone-2);
+  --line: var(--ink-3);
+  --figure: var(--marble);          /* statue body colour */
+  --figure-hatch: var(--marble);    /* hatching colour on figures */
+  --accent: var(--blue);
+  --accent-contrast: #FFFFFF;       /* text on accent */
+  --focus: #7FB0FF;
+  /* type */
+  --font-ar-display: 'Amiri', 'Noto Naskh Arabic', serif;
+  --font-ar-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif;
+  --font-en-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-en-caps: 'Cinzel', 'Cormorant Garamond', serif;
+  --font-en-body: 'Manrope', system-ui, sans-serif;
+  --font-num: 'Cinzel', 'Manrope', sans-serif;
+  /* scale (fluid) */
+  --fs-hero: clamp(2.4rem, 1.2rem + 5.2vw, 5.6rem);
+  --fs-h2: clamp(1.9rem, 1.1rem + 3vw, 3.6rem);
+  --fs-h3: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+  --fs-body: clamp(1rem, .95rem + .3vw, 1.125rem);
+  --fs-small: .875rem;
+  /* rhythm */
+  --gutter: clamp(16px, 4vw, 64px);
+  --section: clamp(72px, 10vw, 160px);
+  --measure: 34ch;
+  --max: 1320px;
+  /* shape: sharp, inscription-like. Buttons are pills; nothing else is rounded above 4px. */
+  --r-pill: 999px;
+  --r-tiny: 4px;
+  /* motion */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-1: .35s; --dur-2: .7s; --dur-3: 1.2s;
+  --z-nav: 50; --z-overlay: 60;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F4F5F8;
+  --bg-2: #FFFFFF;
+  --fg: #0F131F;
+  --fg-2: #4B5263;
+  --fg-3: #7A8194;
+  --line: #D9DCE5;
+  --figure: #0060F8;
+  --figure-hatch: #0060F8;
+  --focus: #0A3FA6;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #F4F5F8;
+    --bg-2: #FFFFFF;
+    --fg: #0F131F;
+    --fg-2: #4B5263;
+    --fg-3: #7A8194;
+    --line: #D9DCE5;
+    --figure: #0060F8;
+    --figure-hatch: #0060F8;
+    --focus: #0A3FA6;
+  }
+}
