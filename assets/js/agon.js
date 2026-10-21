@@ -148,8 +148,7 @@ export function mountAgon(root) {
   /* ---- medallions: hover, long-press (500ms) and focus show the tally; tapping "You" adds a tick ---- */
   items.forEach((it, i) => {
     let timer = 0, held = false, peek = 0;
-    const show = () => it.el.classList.add('is-tally'), hide = () => it.el.classList.remove('is-tally');
-    const cls = it.el.classList;
+    const cls = it.el.classList, show = () => cls.add('is-tally'), hide = () => cls.remove('is-tally');
     it.disc.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(); });
     it.disc.addEventListener('pointerleave', () => { clearTimeout(timer); hide(); });
     it.disc.addEventListener('pointerdown', () => { clearTimeout(timer); it.skip = false; timer = setTimeout(() => { held = true; show(); }, 500); });

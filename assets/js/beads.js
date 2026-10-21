@@ -21,8 +21,8 @@ const tx = k => { const s = t(k); return s === k && FALLBACK[k] ? FALLBACK[k][cu
 
 export function mountBeads(root) {
   const beads = [];                       // { f: filled, s: shielded, slot: reserved by a break, lost, r: recovered }
-  for (let i = 1; i <= W; i++) beads.push({ f: i < 9 || i > 11, s: i === 15 || i === 16 });
-  let pending = 0, recovers = 0;
+  for (let i = 1; i <= W; i++) beads.push({ f: i < 9 || i > 11, s: i === 15 || i === 16 ? 1 : 0 });   // s = shield group id
+  let pending = 0, recovers = 0, groups = 1;
   root.classList.add('beads');
   root.innerHTML = `
     <svg class="beads-defs" width="0" height="0" aria-hidden="true"><defs><g id="beads-sprig">${SPRIG}</g></defs></svg>
@@ -64,8 +64,8 @@ export function mountBeads(root) {
       c.toggle('is-thin-a', thin.has('a' + i)); c.toggle('is-thin-b', thin.has('b' + i));
       el.style.setProperty('--d', ((delay && delay.get(i)) || 0) + 'ms');
       let sh = el.querySelector('.beads-shield');
-      if (b.s && !(beads[i - 1] && beads[i - 1].s)) {                      // first bead of a shielded group
-        let w = 1; while (beads[i + w] && beads[i + w].s) w++;
+      if (b.s && !(beads[i - 1] && beads[i - 1].s === b.s)) {               // first bead of a shielded group
+        let w = 1; while (beads[i + w] && beads[i + w].s === b.s) w++;
         if (!sh) { el.insertAdjacentHTML('beforeend', SHIELD); sh = el.lastElementChild; arrive(sh); }
         sh.style.setProperty('--w', w);
       } else if (sh) sh.remove();
@@ -86,7 +86,7 @@ export function mountBeads(root) {
 
   function push(filled = true) {
     let i;
-    if (pending > 0) { i = beads.length - pending; beads[i] = { f: !!filled, s: true }; pending--; track.children[i].classList.add('is-new'); }
+    if (pending > 0) { i = beads.length - pending; beads[i] = { f: !!filled, s: beads[i].s }; pending--; track.children[i].classList.add('is-new'); }
     else { i = beads.push({ f: !!filled }) - 1; cell(true); }
     const el = track.children[i]; let msg = '', delay;
     if (counted(beads[i])) {
@@ -97,7 +97,7 @@ export function mountBeads(root) {
         if (k) msg = tx('beads.lost');
       }
     }
-    render(delay); arrive(el); reveal(el); announce(msg);
+    render(delay); arrive(el); reveal(track.lastElementChild); announce(msg);
   }
   function recover() {
     if (btn.recover.disabled) return;
@@ -112,8 +112,8 @@ export function mountBeads(root) {
       beads.splice(beads.length - pending); while (track.children.length > beads.length) track.lastElementChild.remove();
       pending = 0; render(); announce(tx('beads.unbreak')); return;
     }
-    pending = 3;
-    for (let k = 0; k < 3; k++) { beads.push({ slot: true, s: true, f: false }); cell(false); }
+    pending = 3; groups++;
+    for (let k = 0; k < 3; k++) { beads.push({ slot: true, s: groups, f: false }); cell(false); }
     render(); reveal(track.lastElementChild); announce(tx('beads.break'));
   }
   function texts() {

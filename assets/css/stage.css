@@ -2,7 +2,7 @@
    --a/--b draw, --c/--d undraw, --len partial fill. Scene units map to the canvas through --u (xMidYMid meet). */
 .stage { position: relative; --p: 0; }
 .stage.is-pinned { height: calc(2 * 110vh + 40vh); }
-.stage-canvas { position: relative; container-type: size; --pa: clamp(0, var(--p) / .5, 1); --leaves: calc(3.5 + 4.9 * var(--pa));
+.stage-canvas { position: relative; container-type: size; --pa: clamp(0, var(--p) / .5, 1); --leaves: calc(4 + 4 * var(--pa));
   --u: min(var(--sh) / var(--vh), 100cqw / var(--vw)); }
 .is-pinned .stage-canvas { position: sticky; top: 0; height: 100svh; overflow: clip; }
 .stage-scene { position: absolute; top: 0; inset-inline: 0; width: 100%; height: var(--sh); max-width: none; pointer-events: none; overflow: hidden;

@@ -36,6 +36,7 @@
   --accent-pale: var(--blue-soft);
   --spine-x: 10px;
   --grain-opacity: .07;
+  --char-invert: 1;               /* the ink-line character art is inverted on the dark ground */
   /* type */
   --font-ar-display: 'Amiri', 'Noto Naskh Arabic', serif;
   --font-ar-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif;
@@ -74,6 +75,7 @@
   --figure: #0060F8;
   --figure-hatch: #0060F8;
   --figure-contour: #0E1120;
+  --char-invert: 0;
   --focus: #0A3FA6;
 }
 @media (prefers-color-scheme: light) {
@@ -88,6 +90,7 @@
     --figure: #0060F8;
     --figure-hatch: #0060F8;
     --figure-contour: #0E1120;
+    --char-invert: 0;
     --focus: #0A3FA6;
   }
 }
