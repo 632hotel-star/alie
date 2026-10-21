@@ -27,10 +27,15 @@
   --fg-3: var(--stone-2);
   --line: var(--ink-3);
   --figure: var(--marble);          /* statue body colour */
-  --figure-hatch: var(--marble);    /* hatching colour on figures */
+  --figure-hatch: var(--marble);    /* contour/outline colour on figures */
+  --figure-contour: #0A0D16;        /* hatching strokes: the ground colour, so cuts read as engraved */
   --accent: var(--blue);
   --accent-contrast: #FFFFFF;       /* text on accent */
   --focus: #7FB0FF;
+  --accent-deep: var(--blue-deep);
+  --accent-pale: var(--blue-soft);
+  --spine-x: 10px;
+  --grain-opacity: .07;
   /* type */
   --font-ar-display: 'Amiri', 'Noto Naskh Arabic', serif;
   --font-ar-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif;
@@ -68,6 +73,7 @@
   --line: #D9DCE5;
   --figure: #0060F8;
   --figure-hatch: #0060F8;
+  --figure-contour: #0E1120;
   --focus: #0A3FA6;
 }
 @media (prefers-color-scheme: light) {
@@ -81,6 +87,9 @@
     --line: #D9DCE5;
     --figure: #0060F8;
     --figure-hatch: #0060F8;
+    --figure-contour: #0E1120;
     --focus: #0A3FA6;
   }
 }
+
+@media (min-width: 768px) { :root { --spine-x: calc(var(--gutter) - 18px); } }

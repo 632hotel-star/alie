@@ -4,17 +4,17 @@
 import { bustSVG } from './brand.js';
 import { t, reduced, clamp } from './core.js';
 
-export function mountCompare(root) {
+export function mountCompare(root, { onCut } = {}) {
   root.classList.add('compare');
   root.innerHTML = `
     <div class="compare-frame">
-      <div class="compare-layer compare-before">${bustSVG(1, { label: t('compare.before') })}</div>
-      <div class="compare-layer compare-after">${bustSVG(3, { label: t('compare.after') })}</div>
+      <div class="compare-layer compare-before">${bustSVG(1, { label: t('carved.first') })}</div>
+      <div class="compare-layer compare-after">${bustSVG(3, { label: t('carved.latest') })}</div>
       <div class="compare-divider" aria-hidden="true"><span class="compare-handle"><svg><use href="#i-arrows-left-right"/></svg></span></div>
       <label class="compare-range-label"><span class="sr-only">${t('compare.range')}</span>
         <input class="compare-range" type="range" min="0" max="100" value="38" step="1"></label>
-      <span class="compare-tag compare-tag-before">${t('compare.before')}</span>
-      <span class="compare-tag compare-tag-after">${t('compare.after')}</span>
+      <span class="compare-tag compare-tag-before">${t('carved.first')}</span>
+      <span class="compare-tag compare-tag-after">${t('carved.latest')}</span>
     </div>
     <figure class="compare-chart" aria-hidden="true">
       <svg viewBox="0 0 600 180" preserveAspectRatio="none">
@@ -25,7 +25,7 @@ export function mountCompare(root) {
         <path class="chart-actual" d="M0 44 C 60 40, 110 60, 160 70 S 260 72, 320 96 S 440 118, 520 134 S 580 146, 600 142" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" pathLength="1"/>
         <line class="chart-cursor" x1="0" y1="0" x2="0" y2="180" stroke="currentColor" stroke-width="1" opacity=".5"/>
       </svg>
-      <figcaption><span>${t('compare.plan')}</span><span>${t('compare.actual')}</span></figcaption>
+      <figcaption><span>${t('carved.projected')}</span><span>${t('carved.actual')}</span></figcaption>
     </figure>`;
   const range = root.querySelector('.compare-range');
   const after = root.querySelector('.compare-after');
@@ -34,7 +34,7 @@ export function mountCompare(root) {
   const frame = root.querySelector('.compare-frame');
   function apply(v) {
     const p = clamp(v / 100);
-    root.style.setProperty('--cut', String(p));
+    root.style.setProperty('--cut', String(p)); if (onCut) onCut(p);
     const rtl = document.documentElement.dir === 'rtl';
     // reveal "after" from the inline-start edge up to the cut
     after.style.clipPath = rtl ? `inset(0 0 0 ${(1 - p) * 100}%)` : `inset(0 ${(1 - p) * 100}% 0 0)`;
@@ -51,9 +51,9 @@ export function mountCompare(root) {
     range.value = String(Math.round(clamp(p) * 100)); apply(Number(range.value));
   });
   document.addEventListener('bm:lang', () => {
-    root.querySelector('.compare-tag-before').textContent = t('compare.before');
-    root.querySelector('.compare-tag-after').textContent = t('compare.after');
-    root.querySelector('.compare-chart figcaption').innerHTML = `<span>${t('compare.plan')}</span><span>${t('compare.actual')}</span>`;
+    root.querySelector('.compare-tag-before').textContent = t('carved.first');
+    root.querySelector('.compare-tag-after').textContent = t('carved.latest');
+    root.querySelector('.compare-chart figcaption').innerHTML = `<span>${t('carved.projected')}</span><span>${t('carved.actual')}</span>`;
     apply(Number(range.value));
   });
   apply(Number(range.value));

@@ -114,6 +114,18 @@ export function stickyProgress(wrapper, onProgress, { scrub = 0.18 } = {}) {
   return () => { io.disconnect(); cancelAnimationFrame(raf); };
 }
 
+/* ---------- scene progress (non-pinned) ----------
+   p = how far the "pen" (a point at 60% of the viewport height) has travelled through the element: 0 before the
+   element's top reaches it, 1 once its bottom has passed it. IO-gated rAF, no scroll listeners. */
+export function scrollProgress(el, onProgress, { pen = .6 } = {}) {
+  let active = false, raf = 0, last = -1;
+  const compute = () => { const r = el.getBoundingClientRect(); return clamp((window.innerHeight * pen - r.top) / r.height); };
+  const tick = () => { const p = compute(); if (p !== last) { last = p; onProgress(p); } raf = active ? requestAnimationFrame(tick) : 0; };
+  const io = new IntersectionObserver(([en]) => { active = en.isIntersecting; if (active && !raf) raf = requestAnimationFrame(tick); else if (!active) { onProgress(compute()); } }, { rootMargin: '10% 0px 10% 0px' });
+  io.observe(el); onProgress(compute());
+  return () => { io.disconnect(); cancelAnimationFrame(raf); };
+}
+
 /* ---------- small utils ---------- */
 export const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 export const lerp = (a, b, t) => a + (b - a) * t;

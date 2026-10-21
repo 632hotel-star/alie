@@ -10,7 +10,7 @@ const CIRC = 2 * Math.PI * R;
 
 export function mountDayRing(root, items, { onStar } = {}) {
   const state = items.map(it => ({ ...it, active: true, done: false }));
-  let streak = 0, starLit = false;
+  let starLit = false;
   root.classList.add('dayring');
   root.innerHTML = `
     <div class="dayring-stage">
@@ -24,14 +24,12 @@ export function mountDayRing(root, items, { onStar } = {}) {
       <p class="dayring-caption" aria-live="polite"></p>
     </div>
     <div class="dayring-footer">
-      <ol class="streak" aria-label="streak"></ol>
       <button type="button" class="chip dayring-next"></button>
     </div>`;
   const itemsEl = root.querySelector('.dayring-items');
   const fill = root.querySelector('.dayring-fill');
   const star = root.querySelector('.dayring-star');
   const caption = root.querySelector('.dayring-caption');
-  const streakEl = root.querySelector('.streak');
   const nextBtn = root.querySelector('.dayring-next');
 
   // place items around the ring, starting at the top, following the reading direction
@@ -54,8 +52,7 @@ export function mountDayRing(root, items, { onStar } = {}) {
       el.querySelector('.dayring-switch').addEventListener('click', () => { it.active = !it.active; if (!it.active) it.done = false; update(); });
       itemsEl.appendChild(el);
     });
-    streakEl.innerHTML = Array.from({ length: 7 }, (_, i) => `<li class="${i < streak ? 'is-star' : ''}"><svg viewBox="0 0 200 200" aria-hidden="true"><path d="${STAR}" transform="translate(-1036 -493)" fill="currentColor"/></svg></li>`).join('');
-    nextBtn.textContent = t('ring.next');
+    nextBtn.textContent = t('commit.newday');
   }
   function update() {
     const active = state.filter(s => s.active);
@@ -65,7 +62,7 @@ export function mountDayRing(root, items, { onStar } = {}) {
     const complete = active.length > 0 && done === active.length;
     if (complete && !starLit) { starLit = true; root.classList.add('is-complete'); onStar && onStar(); }
     if (!complete && starLit) { starLit = false; root.classList.remove('is-complete'); }
-    caption.textContent = complete ? t('ring.done') : (done ? t('ring.progress').replace('{n}', String(active.length - done)) : t('ring.hint'));
+    caption.textContent = complete ? t('ring.done') : (done ? t('commit.status').replace('{d}', String(done)).replace('{n}', String(active.length)) : t('ring.hint'));
     // re-render item states without rebuilding
     itemsEl.querySelectorAll('.dayring-item').forEach((el, i) => {
       const it = state[i];
@@ -77,7 +74,6 @@ export function mountDayRing(root, items, { onStar } = {}) {
   }
   nextBtn.addEventListener('click', () => {
     if (!starLit) return;
-    streak = Math.min(7, streak + 1);
     state.forEach(s => { s.done = false; });
     starLit = false; root.classList.remove('is-complete'); root.classList.add('is-reset');
     setTimeout(() => root.classList.remove('is-reset'), 400);
