@@ -85,7 +85,7 @@ svg .f { transform-box: fill-box; }
 
 /* evo */
 .evo-art { height: 100%; }
-.evo-img { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; filter: invert(1); opacity: clamp(0, 1 - abs(var(--p) * 4 - var(--i)) * 2, 1); transition: opacity .12s linear; }
+.evo-img { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; opacity: clamp(0, 1 - abs(var(--p) * 4 - var(--i)) * 2, 1); transition: opacity .12s linear; }
 .evo-img[style*="--i:4"] { filter: none; }
 .evo-meter { display: grid; gap: .5rem; }
 .evo-stars { display: flex; gap: .5rem; }
@@ -131,7 +131,7 @@ html[dir="rtl"] .ring { --dir: -1; }
 /* lazy rule */
 .lazy-art { display: grid; grid-template-rows: 1fr auto; gap: 1.2rem; align-items: end; }
 .lazy-img { max-height: min(56svh, 520px); }
-.lazy-img { height: 100%; width: auto; max-width: 100%; justify-self: center; object-fit: contain; filter: invert(1); opacity: calc(clamp(0, (var(--p) - .25) / .15, 1) * clamp(.35, 1 - (var(--p) - .62) / .15, 1)); transition: opacity .12s linear; }
+.lazy-img { height: 100%; width: auto; max-width: 100%; justify-self: center; object-fit: contain; opacity: calc(clamp(0, (var(--p) - .25) / .15, 1) * clamp(.35, 1 - (var(--p) - .62) / .15, 1)); transition: opacity .12s linear; }
 .string { position: relative; height: 80px; display: flex; align-items: center; justify-content: space-between; padding-inline: 4px; }
 .string-line { position: absolute; inset-inline: 0; top: 50%; height: 3px; background: var(--accent); margin-top: -1.5px; }
 .string-thin { position: absolute; top: 50%; height: 1px; background: var(--accent); margin-top: -.5px; inset-inline-start: 37.5%; width: 25%; opacity: 0; }
@@ -152,7 +152,7 @@ html[dir="rtl"] .ring { --dir: -1; }
 .medal { position: absolute; width: 64px; height: 64px; border-radius: var(--r-pill); overflow: hidden; background: #111; border: 2px solid var(--fg-3); top: calc((60 + var(--i) * 75) / 420 * 100%);
   --r: calc(var(--r1) * (1 - var(--k)) + var(--r2) * var(--k));
   inset-inline-start: calc(6% + (4 - var(--r)) * 20%); transform: translate(0, -50%) scale(var(--in)); opacity: var(--in); transition: inset-inline-start .12s linear, transform .12s linear; }
-.medal img { width: 100%; height: 100%; object-fit: cover; object-position: 50% var(--fy); transform: scale(2.4); transform-origin: 50% 12%; filter: invert(1); }
+.medal img { width: 100%; height: 100%; object-fit: cover; object-position: 50% var(--fy); transform: scale(2.4); transform-origin: 50% 12%; }
 .medal[style*="--i:4"] img { filter: none; }
 .medal[style*="--i:1"] { border-color: var(--accent); }
 .you-tag { position: absolute; font-size: .75rem; color: var(--accent); font-weight: 600; --i: 1; --r1: 1; --r2: 0; --r: calc(var(--r1) * (1 - var(--k)) + var(--r2) * var(--k)); inset-inline-start: calc(6% + (4 - var(--r)) * 20% + 12px); top: calc((60 + var(--i) * 75) / 420 * 100% + 34px); opacity: var(--in); transition: inset-inline-start .12s linear; }
@@ -166,7 +166,7 @@ html[dir="rtl"] .ring { --dir: -1; }
 /* results */
 .results-art { display: grid; width: 100%; grid-template-rows: auto auto auto; gap: .6rem; align-content: center; }
 .wipe { position: relative; width: 100%; height: min(52svh, 480px); display: grid; place-items: center; --w: clamp(0, (var(--p) - .35) / .4, 1); }
-.wipe img { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; filter: invert(1); }
+.wipe img { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; }
 .wipe-b { clip-path: inset(0 0 0 calc((1 - var(--w)) * 100%)); }
 html[dir="rtl"] .wipe-b { clip-path: inset(0 calc((1 - var(--w)) * 100%) 0 0); }
 .wipe-a { clip-path: inset(0 calc(var(--w) * 100%) 0 0); }
