@@ -21,10 +21,10 @@ const DESK = { vw: 1200, vh: 800, sh: '100cqh', fig: [492, 270, 415, 460], ey: 7
   entry: 'M-200 700H120C220 700 220 612 300 612H1100', bar: [1100, 612], rings: [360, 1040, 612], rr: [14, 26, 38],
   rest: [1040, 430, 60], tally: [1000, 672, 9, 24, 30], arcs: [700, 620, [300, 270, 240]], a0: 25, a1: -40,
   plates: [[1110, 300], [1110, 460], [1110, 620]], pr: 46, col: true };
-const MOB = { vw: 760, vh: 1000, sh: '68cqh', fig: [240, 260, 361, 400], ey: 740, xy: 940,
-  entry: 'M-200 740H40C110 740 90 556 130 556H740', bar: [740, 556], rings: [190, 660, 556], rr: [12, 22, 32],
-  rest: [660, 400, 48], tally: [625, 610, 8, 20, 28], arcs: [420, 560, [250, 225, 200]], a0: 25, a1: -35,
-  plates: [[200, 800], [400, 800], [600, 800]], pr: 50, col: false };
+const MOB = { vw: 760, vh: 920, sh: 'min(68cqh, 121.05cqw)', fig: [220, 170, 400, 443], ey: 300, xy: 900,
+  entry: 'M-200 300H40C110 300 90 498 130 498H745', bar: [745, 498], rings: [170, 695, 498], rr: [12, 22, 32],
+  rest: [695, 350, 48], tally: [60, 545, 8, 20, 28], arcs: [420, 560, [240, 215, 190]], a0: 25, a1: -35,
+  plates: [[200, 760], [400, 760], [600, 760]], pr: 50, col: false };
 
 const win = (a, b, c, d) => `--a:${a};--b:${b}${c != null ? `;--c:${c};--d:${d}` : ''}`;
 const P = (cls, d, w) => `<path class="stage-d ${cls}" d="${d}" pathLength="1" style="${w}" vector-effect="non-scaling-stroke"/>`;
@@ -69,7 +69,7 @@ function scene(L) {
   /* fixed: three carved portions and a check */
   const cq = [p1x + pr * .78, p1y - pr * .78];
   let f = P('stage-hl', [0, 120, 240].map(g => `M${pol(p1x, p1y, 8, g - 90)}L${pol(p1x, p1y, pr - 8, g - 90)}`).join(''), win(.72, .75));
-  f += P('stage-hl stage-chk', `M${cq[0] - 7} ${cq[1]}l5 5 9-10`, `${win(.75, .76)};--cx:${cq[0]}`);
+  f += P('stage-hl stage-chk', `M${cq[0] - 8} ${cq[1]}l6 6 11-12`, `${win(.75, .76)};--cx:${cq[0]}`);
   /* flexible: a shelf of three saved pieces that slide into the plate */
   const shx = p2x + pr + 10, shy = p2y + 8, tgt = [[p2x - 11, p2y - 8], [p2x + 4, p2y - 8], [p2x - 3, p2y + 5]];
   let g = P('stage-hl', `M${shx} ${shy}h29`, win(.78, .8));

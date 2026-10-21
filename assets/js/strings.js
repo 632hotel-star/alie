@@ -123,4 +123,11 @@ export const STRINGS = {
   'close.coming': { ar: 'قريبًا على App Store', en: 'Coming to the App Store' },
   'footer.links': { ar: 'روابط', en: 'Links' },
   'commit.group': { ar: 'دائرة اليوم', en: 'The day ring' },
+  // beads (string of days)
+  'beads.string': { ar: 'سلسلة الأيام', en: 'String of days' },
+  'beads.count': { ar: 'الأيام المكتملة: {f} من {n}.', en: 'Days filled: {f} of {n}.' },
+  'beads.lost': { ar: 'ثلاثة أيام فارغة: ذهبت 3 نجوم.', en: 'Three empty days: 3 stars lost.' },
+  'beads.recovered': { ar: 'عادت النجوم وعاد الخط كما كان.', en: 'Stars recovered and the Line is whole again.' },
+  'beads.break': { ar: 'الأيام الثلاثة القادمة محمية.', en: 'The next 3 days are protected.' },
+  'beads.unbreak': { ar: 'ألغيت الإجازة.', en: 'Break cancelled.' },
 };

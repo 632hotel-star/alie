@@ -122,6 +122,8 @@ export function mountBeads(root) {
     btn.empty.textContent = t('commit.empty'); btn.recover.textContent = t('commit.recover');
     btn.break.textContent = t('commit.break'); btn.newday.textContent = t('commit.newday');
     live.textContent = '';
+    track.classList.add('is-static');                                      // a direction flip must not slide the window
+    requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('is-static')));
   }
 
   btn.empty.addEventListener('click', () => push(false));
