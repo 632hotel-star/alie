@@ -27,16 +27,16 @@ export function mountAgon(root) {
     <div class="agon-stage">
       <svg class="agon-lanes" aria-hidden="true"></svg>
       <div class="agon-field">${friends.map((f, i) => `
-        <div class="agon-m${f.you ? ' is-you' : ''}">
+        <div class="agon-m${f.you ? ' is-you' : ''}"><div class="agon-flip">
           <button type="button" class="agon-disc" aria-describedby="${uid}-${i}"></button>
           ${f.you ? '<span class="agon-you"></span>' : ''}
           <svg class="agon-tally" id="${uid}-${i}" role="img" height="14"></svg>
-        </div>`).join('')}</div>
+        </div></div>`).join('')}</div>
     </div>
     <p class="agon-live sr-only" aria-live="polite"></p>`;
   const ctl = root.querySelector('.agon-ctl'), chips = Array.from(ctl.children);
   const stage = root.querySelector('.agon-stage'), svg = root.querySelector('.agon-lanes'), live = root.querySelector('.agon-live');
-  const items = Array.from(root.querySelectorAll('.agon-m')).map(el => ({ el, disc: el.querySelector('.agon-disc'), tally: el.querySelector('.agon-tally'), state: 0, anim: null }));
+  const items = Array.from(root.querySelectorAll('.agon-m')).map(el => ({ el, box: el.firstElementChild, disc: el.querySelector('.agon-disc'), tally: el.querySelector('.agon-tally'), state: 0, anim: null }));
 
   const score = f => axis === 'stars' ? f.stars : axis === 'iron' ? f.iron : (f.stars + f.iron) / 2;
   const ticks = f => Math.min(MAX, Math.round(score(f)));
@@ -57,12 +57,14 @@ export function mountAgon(root) {
       for (let i = 0; i < N; i++) { paths.push(`M0 ${top + i * P}H${W}`); slots.push({ lane: i, d: 36 + i * step }); }
       finish = `M${W - .5} ${top - 30}V${top + (N - 1) * P + 30}`;
     } else {
-      const G = Math.min(80, Math.max(58, W / 16)), R0 = Math.round(G * 1.3), R4 = R0 + 4 * G;
-      const cy = 24 + R4, cx = W - R4 - 36, oy = cy - R0 - 2 * G, step = Math.min(G * 1.2, (cx - 50) / 4);
+      const G = Math.min(80, Math.max(52, W / 16)), R0 = Math.round(G * 1.3), R4 = R0 + 4 * G;
+      const cy = 40 + R4, cx = W - R4 - 36, oy = cy - R0 - 2 * G, fx = Math.min(cx * .4, 360);
+      const step = Math.min(G * 1.2, Math.max(44, (cx - fx - 80) / 3));
       H = cy + 56;
-      for (let i = 0; i < 5; i++) { const r = R0 + i * G, y = cy - r; paths.push(`M0 ${oy}C${cx * .5} ${oy} ${cx * .5} ${y} ${cx} ${y}A${r} ${r} 0 0 1 ${cx + r} ${cy}`); }
+      /* each lane: a fan from the origin, a straight, then the quarter bend to the finish */
+      for (let i = 0; i < 5; i++) { const r = R0 + i * G, y = cy - r; paths.push(`M0 ${oy}C${fx * .5} ${oy} ${fx * .5} ${y} ${fx} ${y}H${cx}A${r} ${r} 0 0 1 ${cx + r} ${cy}`); }
       /* the leader sits on the bend near the finish; the others wait on the straights, staggered back by rank */
-      for (let r = 0; r < N; r++) { const lane = Math.min(r, 4); slots.push({ lane, d: r ? (R0 + lane * G) * Math.PI / 2 + 10 + (r - 1) * step : 44 }); }
+      for (let r = 0; r < N; r++) { const lane = Math.min(r, 4); slots.push({ lane, d: r ? (R0 + lane * G) * Math.PI / 2 + 10 + (r - 1) * step + (r === 5 ? Math.max(0, 70 - step) : 0) : R0 }); }
       finish = `M${cx + R0 - 12} ${cy + .5}H${cx + R4 + 12}`;
     }
     root.style.setProperty('--agon-h', H + 'px');
@@ -73,10 +75,10 @@ export function mountAgon(root) {
     pos = slots.map(s => { const p = lanes[s.lane]; return p.getPointAtLength(Math.max(0, p.getTotalLength() - s.d)); });
   }
 
-  /* ---- FLIP: measure, change, invert, play ---- */
+  /* ---- FLIP: measure, change, invert, play (the inner box animates so the position transform stays untouched) ---- */
   function place(animate) {
     if (!pos.length) return;
-    const first = animate && !reduced() ? items.map(it => it.el.getBoundingClientRect()) : null;
+    const first = animate && !reduced() ? items.map(it => it.box.getBoundingClientRect()) : null;
     items.forEach(it => { if (it.anim) { it.anim.cancel(); it.anim = null; } });
     const D = dir();
     items.forEach((it, i) => {
@@ -86,10 +88,9 @@ export function mountAgon(root) {
     });
     if (!first) return;
     items.forEach((it, i) => {
-      const last = it.el.getBoundingClientRect(), dx = first[i].left - last.left, dy = first[i].top - last.top;
+      const last = it.box.getBoundingClientRect(), dx = first[i].left - last.left, dy = first[i].top - last.top;
       if (!dx && !dy) return;
-      it.anim = it.el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'translate(0px, 0px)' }],
-        { duration: 480, easing: EASE, composite: 'add' });
+      it.anim = it.box.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 480, easing: EASE });
     });
   }
 
@@ -168,7 +169,9 @@ export function mountAgon(root) {
 
   /* ---- init, resize, language, entry draw ---- */
   text(); rankAll(); dress(); youRank = rank[you];
-  new ResizeObserver(() => { build(); place(false); }).observe(stage);
+  const relayout = () => { build(); place(false); };
+  new ResizeObserver(relayout).observe(stage);
+  phone.addEventListener('change', relayout);
   document.addEventListener('bm:lang', () => { text(); dress(); place(false); });
   if (reduced() || !('IntersectionObserver' in window)) root.style.setProperty('--p', 1);
   else {

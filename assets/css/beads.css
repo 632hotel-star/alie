@@ -1,5 +1,5 @@
 /* Beads: the string of days on the Line (lazy rule, recovery, breaks). Logical layout, transform/opacity only. */
-.beads { --beads-cell: calc(100% / 21); --beads-row: 84px; --beads-dir: 1; --beads-groove: var(--accent-deep); position: relative; display: grid; gap: 1rem; }
+.beads { --beads-cell: calc(100% / 21); --beads-row: 100px; --beads-dir: 1; --beads-groove: var(--accent-deep); position: relative; display: grid; gap: 1rem; }
 [dir="rtl"] .beads { --beads-dir: -1; }
 :root[data-theme="light"] .beads { --beads-groove: color-mix(in srgb, var(--fg) 25%, transparent); }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .beads { --beads-groove: color-mix(in srgb, var(--fg) 25%, transparent); } }
@@ -32,10 +32,12 @@
 .is-new .beads-dot { transform: translateY(-40px); }
 .is-new .beads-seg-a { transform: scaleX(0); }
 
-/* laurel shield over a protected group: two sprigs arched over the beads */
-.beads-shield { position: absolute; inset-inline-start: 0; top: 0; width: calc(var(--w, 1) * 100%); max-width: none; height: calc(50% + 8px);
-  color: var(--fg-2); pointer-events: none; transition: opacity .32s linear; }
+/* laurel shield: two sprigs rise from the group's outer beads and lean over it (a crown, inside the group box) */
+.beads-shield { position: absolute; inset-inline-start: 0; top: 0; width: calc(var(--w, 1) * 100%); height: 100%; color: var(--fg-2); pointer-events: none; transition: opacity .32s linear; }
 .beads-shield.is-new { opacity: 0; }
+.beads-sprig { position: absolute; bottom: calc(50% + 6px); inset-inline-start: calc(50% / var(--w, 1) - 18px); width: 36px; height: 58px; max-width: none;
+  transform-origin: 50% 96%; transform: rotate(calc(var(--beads-dir) * 42deg)); }
+.beads-sprig-end { inset-inline-start: auto; inset-inline-end: calc(50% / var(--w, 1) - 18px); transform: rotate(calc(var(--beads-dir) * -42deg)); }
 
 .beads-caption { font-size: var(--fs-small); line-height: 1.45; color: var(--fg-2); max-width: var(--measure); text-align: start; }
 .beads-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
@@ -43,7 +45,9 @@
 .beads-chips .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
 
 @media (max-width: 767px) {
-  .beads { --beads-cell: 36px; }
+  .beads { --beads-cell: 32px; --beads-row: 84px; }
+  .beads-sprig { width: 26px; height: 42px; inset-inline-start: calc(50% / var(--w, 1) - 13px); }
+  .beads-sprig-end { inset-inline-start: auto; inset-inline-end: calc(50% / var(--w, 1) - 13px); }
   .beads-scroller { overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: none; }
   .beads-scroller::-webkit-scrollbar { display: none; }
   .beads-cell { scroll-snap-align: center; }

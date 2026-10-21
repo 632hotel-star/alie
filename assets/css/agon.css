@@ -17,7 +17,8 @@
 
 /* medallions: absolutely positioned, moved with transform only */
 .agon-field { position: absolute; inset: 0; }
-.agon-m { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 64px; display: grid; justify-items: center; gap: 4px; transform: translate(var(--x, 0px), var(--y, 0px)); }
+.agon-m { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 64px; transform: translate(var(--x, 0px), var(--y, 0px)); }
+.agon-flip { display: grid; justify-items: center; gap: 4px; }
 .agon-m.is-tally, .agon-m.is-peek, .agon-m:has(.agon-disc:focus-visible) { z-index: 2; }
 .agon-disc { width: 64px; height: 64px; border-radius: var(--r-pill); background: var(--bg-2); border: 1px solid var(--line); overflow: hidden; display: grid; place-items: center;
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: border-color var(--dur-1); }

@@ -35,8 +35,6 @@ export function mountProcession(root, stages, { pin = false } = {}) {
       entries.forEach(en => en.target.classList.toggle('is-focus', en.isIntersecting && en.intersectionRatio > .6));
     }, { root: row, threshold: [0, .6, 1] });
     items.forEach(i => io.observe(i));
-    // start at the reading start without relying on scrollLeft sign conventions
-    requestAnimationFrame(() => items[0].scrollIntoView({ block: 'nearest', inline: 'start', behavior: 'instant' }));
   }
   if (reduced()) items.forEach(el => el.classList.add('is-drawn'));
   document.addEventListener('bm:lang', () => {
