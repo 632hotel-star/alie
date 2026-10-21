@@ -84,7 +84,7 @@ function scene(L) {
 <g class="stage-fig" style="--fx:${fx};--fy:${fy};--fw:${fw};--fh:${fh}">${bustSVG(3, { label: tt('stage.figure') })}</g></svg>`;
   /* HTML labels, positioned in scene units; CSS maps them through --u and mirrors them by inline-start */
   let l = KEYS_T.map((k, i) => lbl('is-s', k, tx + 4 * tp + 10, ty + i * tg + th / 2, win(.3 + i * .07, .36 + i * .07, .5, .56))).join('');
-  l += at('is-c', sx, sy - 4, `<bdi class="num stage-num stage-f" style="${win(.3, .33, .42, .45)}">60</bdi>`) + lbl('is-c', 'stage.a.rest', sx, sy + 24, win(.3, .33, .42, .45));
+  l += at('is-c', sx, sy - 4, `<bdi class="num stage-num stage-rst stage-f" style="${win(.3, .33, .42, .45)}">60</bdi>`) + at('is-c', sx, sy + 24, `<span class="stage-lbl stage-rst stage-f" data-k="stage.a.rest" style="${win(.3, .33, .42, .45)}">${tt('stage.a.rest')}</span>`);
   l += KEYS_N.map((k, i) => lbl('is-s', k, outs[i][0] + 4, outs[i][1] + 12, win(.56 + i * .03, .6 + i * .03))).join('');
   l += KEYS_P.map((k, i) => at('is-t', L.plates[i][0], L.plates[i][1] - pr, `<button type="button" class="stage-plate stage-f" data-i="${i}" aria-pressed="false" style="--r:${pr};${win(.7 + i * .095, .74 + i * .095)}"><span class="stage-lbl" data-k="${k}">${tt(k)}</span></button>`)).join('');
   return svg + `<div class="stage-labels">${l}</div>`;
@@ -110,16 +110,16 @@ export function mountStage(root) {
   root.classList.add('stage');
   const mqM = matchMedia('(max-width: 767px)'), mqS = matchMedia('(max-height: 639px)');
   let dispose = null, numEl = null, lastN = -1, beat = 'a';
-  const canvasStyle = L => `--vw:${L.vw};--vh:${L.vh};--sh:${L.sh};--ey:${L.ey};--xy:${L.xy}`;
+  const canvasStyle = (L, st) => `--vw:${L.vw};--vh:${L.vh};--sh:${st ? '100cqh' : L.sh};--ey:${L.ey};--xy:${L.xy}`;
   function build() {
     if (dispose) { dispose(); dispose = null; }
     const L = mqM.matches ? MOB : DESK, isStatic = reduced() || mqS.matches;
     root.classList.toggle('is-static', isStatic); root.classList.toggle('is-pinned', !isStatic);
     if (isStatic) {
-      root.innerHTML = ['a', 'b'].map(bt => `<section class="stage-frame" data-beat="${bt}"><div class="stage-canvas" style="${canvasStyle(L)}">${scene(L)}</div>${cap(bt, true)}</section>`).join('');
+      root.innerHTML = ['a', 'b'].map(bt => `<section class="stage-frame" data-beat="${bt}"><div class="stage-canvas" style="${canvasStyle(L, true)}">${scene(L)}</div>${cap(bt, true)}</section>`).join('');
       root.querySelector('[data-beat="a"] .stage-num').textContent = '60';
     } else {
-      root.innerHTML = `<div class="stage-canvas" style="${canvasStyle(L)}"><div class="stage-stub stage-stub-top stage-f" style="${win(0, .02)}"></div>${scene(L)}<div class="stage-stub stage-stub-bot stage-f" style="${win(.99, 1)}"></div><div class="stage-caps">${cap('a', true)}${cap('b', false)}</div></div>`;
+      root.innerHTML = `<div class="stage-canvas" style="${canvasStyle(L, false)}"><div class="stage-stub stage-stub-top stage-f" style="${win(0, .02)}"></div>${scene(L)}<div class="stage-stub stage-stub-bot stage-f" style="${win(.99, 1)}"></div><div class="stage-caps">${cap('a', true)}${cap('b', false)}</div></div>`;
       numEl = root.querySelector('.stage-num'); lastN = -1; beat = 'a';
       const caps = root.querySelectorAll('.stage-cap');
       dispose = stickyProgress(root, p => {

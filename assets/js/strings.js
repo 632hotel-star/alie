@@ -130,4 +130,5 @@ export const STRINGS = {
   'beads.recovered': { ar: 'عادت النجوم وعاد الخط كما كان.', en: 'Stars recovered and the Line is whole again.' },
   'beads.break': { ar: 'الأيام الثلاثة القادمة محمية.', en: 'The next 3 days are protected.' },
   'beads.unbreak': { ar: 'ألغيت الإجازة.', en: 'Break cancelled.' },
+  'stage.figure': { ar: 'الشخصية وهي تتشكل', en: 'The character, taking shape' },
 };

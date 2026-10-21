@@ -69,11 +69,10 @@ html[dir="rtl"] .stage-fig { transform: translate(calc((var(--vw) - var(--fx) - 
 .is-static .stage-frame { display: grid; gap: 1.25rem; justify-items: start; }
 .is-static .stage-frame + .stage-frame { margin-top: var(--section); }
 .is-static .stage-canvas { aspect-ratio: var(--vw) / var(--vh); width: min(100%, 70vh * var(--vw) / var(--vh)); }
-.is-static .stage-cap { position: static; opacity: 1; width: min(34ch, 100%); margin-inline-start: calc(var(--spine-x) + 20px); }
+.is-static .stage-cap { grid-area: auto; opacity: 1; width: min(34ch, 100%); margin-inline-start: calc(var(--spine-x) + 20px); }
 .is-static [data-beat="a"] { --p: .5; }
 .is-static [data-beat="b"] { --p: 1; }
-.is-static [data-beat="a"] .stage-rest { --seg: 1; }
-.is-static [data-beat="a"] .stage-rest .stage-d { --seg: 1; }
+.is-static [data-beat="a"] :is(.stage-rest, .stage-rest .stage-d, .stage-rst) { --seg: 1; }
 
 @media (max-width: 767px) {
   .stage.is-pinned { height: calc(2 * 100svh + 40svh); }
