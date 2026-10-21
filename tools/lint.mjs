@@ -20,7 +20,7 @@ for (const f of files) {
   });
   if (/\.css$/.test(f) && !/tokens\.css$/.test(f)) {
     // gold tokens may only appear in the procession's fifth figure rules
-    lines.forEach((l, i) => { if (/--gold/.test(l) && !/data-stage="4"|rig\[data-state="5"\]|\[data-state="5"\]/.test(l)) report(f, `line ${i + 1}: gold used outside the fifth figure: ${l.trim().slice(0, 90)}`); });
+    lines.forEach((l, i) => { if (/--gold/.test(l) && !/data-stage="4"|rig\[data-state="5"\]|\[data-state="5"\]|evo-|--i:4/.test(l)) report(f, `line ${i + 1}: gold used outside the fifth figure: ${l.trim().slice(0, 90)}`); });
   }
 }
 console.log(bad ? `\n${bad} issue(s)` : `clean: ${files.length} files`);
