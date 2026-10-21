@@ -218,3 +218,15 @@ html[dir="rtl"] .wipe-a { clip-path: inset(0 0 0 calc(var(--w) * 100%)); }
   .scene .sticky { position: static; height: auto; }
   [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* feature lists per scene, revealed with scroll */
+.feats { list-style: none; margin: .2rem 0 0; padding: 0; display: grid; gap: .5rem; max-width: 40ch; }
+.feat { display: grid; grid-template-columns: 10px 1fr; gap: .7rem; align-items: start; color: var(--fg-2); font-size: .95rem; line-height: 1.5; --seg: clamp(0, (var(--p) - var(--a, 0)) / (var(--b, 1) - var(--a, 0)), 1); opacity: var(--seg); transform: translateY(calc((1 - var(--seg)) * 10px)); transition: opacity .12s linear, transform .12s linear; }
+.feat i { width: 10px; height: 10px; margin-top: .45em; background: var(--accent); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.feats.is-static .feat { --seg: 1; opacity: 1; transform: none; }
+.feats.is-static .feat[data-reveal] { opacity: 0; transform: translateY(10px); } .feats.is-static .feat.is-in { opacity: 1; transform: none; }
+@media (max-width: 1023px) { .feat { font-size: .85rem; } .feats { gap: .35rem; } .scene-copy .lede { display: none; } .scene-grid { grid-template-rows: auto minmax(0, 1fr); } }
+/* plan */
+.plan-grid line { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.hl2 { stroke: var(--fg-3); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.phase { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 6; vector-effect: non-scaling-stroke; }

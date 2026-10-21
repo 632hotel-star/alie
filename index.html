@@ -54,30 +54,31 @@
 </section>
 <div class="nav-sentinel" aria-hidden="true"></div>
 
-<!-- 2 evolution: the five characters, one after another, as you scroll -->
-<section class="scene evo" id="evo" data-pin="520" aria-labelledby="evo-h2">
-  <div class="sticky">
-    <div class="wrap scene-grid">
-      <div class="scene-copy">
-        <h2 id="evo-h2" data-i18n="evo.h2">من كسول إلى ذهبي.</h2>
-        <p class="lede" data-i18n="evo.body">كل يوم تلتزم فيه يمنحك نجمة. والنجوم ترفع شخصيتك مستوى بعد مستوى.</p>
-        <div class="evo-meter" aria-hidden="true">
-          <div class="evo-stars"><svg viewBox="0 0 1254 1254" style="--i:0"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:1"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:2"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:3"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:4"><use href="#logo-star"/></svg></div>
-          <div class="evo-names"><span style="--i:0" data-i18n="evo.s1"></span><span style="--i:1" data-i18n="evo.s2"></span><span style="--i:2" data-i18n="evo.s3"></span><span style="--i:3" data-i18n="evo.s4"></span><span style="--i:4" data-i18n="evo.s5"></span></div>
-        </div>
-      </div>
-      <div class="scene-art evo-art" aria-hidden="true">
-        <img class="evo-img" style="--i:0" src="assets/img/characters/1-idle.webp" width="1100" height="1100" alt="" loading="eager" decoding="async"><img class="evo-img" style="--i:1" src="assets/img/characters/2.webp" width="1100" height="1100" alt="" loading="eager" decoding="async"><img class="evo-img" style="--i:2" src="assets/img/characters/3.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async"><img class="evo-img" style="--i:3" src="assets/img/characters/4.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async"><img class="evo-img" style="--i:4" src="assets/img/characters/5-golden.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async">
-      </div>
+<!-- plan -->
+<section class="scene plan" id="plan" data-pin="260" aria-labelledby="plan-h2">
+  <div class="sticky"><div class="wrap scene-grid">
+    <div class="scene-copy"><h2 id="plan-h2" data-i18n="plan.h2">خطة على مقاسك.</h2><p class="lede" data-i18n="plan.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="plan.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="plan.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="plan.f3"></span></li></ul>
     </div>
-    <div class="evo-bar" aria-hidden="true"><i></i></div>
-  </div>
+    <div class="scene-art" aria-hidden="true">
+      <svg class="device planart" viewBox="0 0 600 420">
+        <g class="plan-grid"><line x1="60" y1="60" x2="60" y2="360"/><line x1="60" y1="360" x2="560" y2="360"/></g>
+        <path class="d hl2" style="--a:.05;--b:.5" d="M60 120 C 200 140, 320 230, 560 300" pathLength="1" stroke-dasharray="6 8"/>
+        <path class="d ln" style="--a:.3;--b:.85" d="M60 120 C 160 150, 260 210, 400 240 S 520 280, 560 290" pathLength="1"/>
+        <g class="f" style="--a:.5;--b:.62"><line class="phase" x1="300" y1="60" x2="300" y2="360"/></g>
+        <g class="f" style="--a:.62;--b:.74"><line class="phase" x1="430" y1="60" x2="430" y2="360"/></g>
+        <circle class="f" style="--a:.85;--b:.95" cx="560" cy="290" r="8" fill="var(--accent)"/>
+      </svg>
+    </div>
+  </div></div>
 </section>
+
 
 <!-- 3 train -->
 <section class="scene train" id="train" data-pin="320" aria-labelledby="train-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="train-h2" data-i18n="train.h2">ارفع. سجّل. تقدّم.</h2><p class="lede" data-i18n="train.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="train.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="train.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="train.f3"></span></li></ul>
       <div class="ledger" aria-hidden="true">
         <div class="ledger-row" style="--a:.55;--b:.65"><span data-i18n="train.start"></span><b class="num" data-count="60"></b><small data-i18n="train.kg"></small></div>
         <div class="ledger-row" style="--a:.68;--b:.78"><span data-i18n="train.last"></span><b class="num" data-count="80"></b><small data-i18n="train.kg"></small></div>
@@ -103,6 +104,7 @@
 <section class="scene eat" id="eat" data-pin="320" aria-labelledby="eat-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="eat-h2" data-i18n="eat.h2">الأكل على طريقتك.</h2><p class="lede" data-i18n="eat.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="eat.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="eat.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="eat.f3"></span></li></ul>
       <div class="modes" aria-hidden="true">
         <div class="mode" style="--a:.6;--b:.72"><b data-i18n="eat.fixed"></b><span data-i18n="eat.fixedNote"></span></div>
         <div class="mode" style="--a:.72;--b:.84"><b data-i18n="eat.flex"></b><span data-i18n="eat.flexNote"></span></div>
@@ -128,6 +130,7 @@
 <section class="scene day" id="day" data-pin="360" aria-labelledby="day-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="day-h2" data-i18n="day.h2">يوم مكتمل، نجمة.</h2><p class="lede" data-i18n="day.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="day.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="day.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="day.f3"></span></li></ul>
       <div class="week" aria-hidden="true"><span data-i18n="day.streak"></span><div class="week-row"><svg viewBox="0 0 1254 1254" style="--a:0.80;--b:0.83"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.83;--b:0.86"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.86;--b:0.89"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.89;--b:0.92"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.92;--b:0.95"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.95;--b:0.98"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--a:0.98;--b:1.01"><use href="#logo-star"/></svg></div></div>
     </div>
     <div class="scene-art" aria-hidden="true">
@@ -144,6 +147,7 @@
 <section class="scene lazy" id="lazy" data-pin="340" aria-labelledby="lazy-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="lazy-h2" data-i18n="lazy.h2">ثلاثة أيام فارغة تكلفك نجومك.</h2><p class="lede" data-i18n="lazy.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="lazy.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="lazy.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="lazy.f3"></span></li></ul>
       <div class="lazy-tags" aria-hidden="true"><span class="f" style="--a:.3;--b:.4" data-i18n="lazy.lost"></span><span class="f" style="--a:.62;--b:.7" data-i18n="lazy.recover"></span><span class="f" style="--a:.78;--b:.86" data-i18n="lazy.break"></span></div>
     </div>
     <div class="scene-art lazy-art" aria-hidden="true">
@@ -152,11 +156,32 @@
     </div>
   </div></div>
 </section>
+<!-- 2 evolution: the five characters, one after another, as you scroll -->
+<section class="scene evo" id="evo" data-pin="520" aria-labelledby="evo-h2">
+  <div class="sticky">
+    <div class="wrap scene-grid">
+      <div class="scene-copy">
+        <h2 id="evo-h2" data-i18n="evo.h2">من كسول إلى ذهبي.</h2>
+        <p class="lede" data-i18n="evo.body">كل يوم تلتزم فيه يمنحك نجمة. والنجوم ترفع شخصيتك مستوى بعد مستوى.</p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="evo.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="evo.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="evo.f3"></span></li></ul>
+        <div class="evo-meter" aria-hidden="true">
+          <div class="evo-stars"><svg viewBox="0 0 1254 1254" style="--i:0"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:1"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:2"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:3"><use href="#logo-star"/></svg><svg viewBox="0 0 1254 1254" style="--i:4"><use href="#logo-star"/></svg></div>
+          <div class="evo-names"><span style="--i:0" data-i18n="evo.s1"></span><span style="--i:1" data-i18n="evo.s2"></span><span style="--i:2" data-i18n="evo.s3"></span><span style="--i:3" data-i18n="evo.s4"></span><span style="--i:4" data-i18n="evo.s5"></span></div>
+        </div>
+      </div>
+      <div class="scene-art evo-art" aria-hidden="true">
+        <img class="evo-img" style="--i:0" src="assets/img/characters/1-idle.webp" width="1100" height="1100" alt="" loading="eager" decoding="async"><img class="evo-img" style="--i:1" src="assets/img/characters/2.webp" width="1100" height="1100" alt="" loading="eager" decoding="async"><img class="evo-img" style="--i:2" src="assets/img/characters/3.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async"><img class="evo-img" style="--i:3" src="assets/img/characters/4.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async"><img class="evo-img" style="--i:4" src="assets/img/characters/5-golden.webp" width="1100" height="1100" alt="" loading="lazy" decoding="async">
+      </div>
+    </div>
+    <div class="evo-bar" aria-hidden="true"><i></i></div>
+  </div>
+</section>
 
 <!-- 7 friends -->
 <section class="scene friends" id="friends" data-pin="340" aria-labelledby="friends-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="friends-h2" data-i18n="friends.h2">نافسهم بالنجوم. أو بالحديد.</h2><p class="lede" data-i18n="friends.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="friends.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="friends.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="friends.f3"></span></li></ul>
       <div class="axis" aria-hidden="true"><span class="chip ax-stars" data-i18n="friends.stars"></span><span class="chip ax-iron" data-i18n="friends.iron"></span></div>
     </div>
     <div class="scene-art lanes" aria-hidden="true">
@@ -171,6 +196,7 @@
 <section class="scene results" id="results" data-pin="340" aria-labelledby="results-h2">
   <div class="sticky"><div class="wrap scene-grid">
     <div class="scene-copy"><h2 id="results-h2" data-i18n="results.h2">النتائج تُحفر، لا تُنسى.</h2><p class="lede" data-i18n="results.body"></p>
+      <ul class="feats"><li class="feat" style="--a:0.15;--b:0.25"><i></i><span data-i18n="results.f1"></span></li><li class="feat" style="--a:0.29;--b:0.39"><i></i><span data-i18n="results.f2"></span></li><li class="feat" style="--a:0.43;--b:0.53"><i></i><span data-i18n="results.f3"></span></li></ul>
       <div class="inbody" aria-hidden="true"><b><bdi dir="ltr">InBody</bdi></b><div class="ib-bars"><div class="ib" style="--v:.72;--a:.6;--b:.8"><i></i><span data-i18n="results.muscle"></span></div><div class="ib" style="--v:.42;--a:.7;--b:.9"><i></i><span data-i18n="results.fat"></span></div></div></div>
     </div>
     <div class="scene-art results-art" aria-hidden="true">
@@ -184,7 +210,7 @@
 <!-- 9 agora -->
 <section class="section agora" id="agora" aria-labelledby="agora-h2">
   <div class="wrap">
-    <div class="section-head"><h2 id="agora-h2" data-i18n="agora.h2">جداول ووجبات من الناس، للناس.</h2><p class="lede" data-i18n="agora.body"></p></div>
+    <div class="section-head"><h2 id="agora-h2" data-i18n="agora.h2">جداول ووجبات من الناس، للناس.</h2><p class="lede" data-i18n="agora.body"></p><ul class="feats is-static"><li class="feat" data-reveal style="--d:0ms"><i></i><span data-i18n="agora.f1"></span></li><li class="feat" data-reveal style="--d:80ms"><i></i><span data-i18n="agora.f2"></span></li><li class="feat" data-reveal style="--d:160ms"><i></i><span data-i18n="agora.f3"></span></li></ul></div>
     <div class="steles">
       <article class="stele" data-reveal style="--d:0ms"><svg aria-hidden="true"><use href="#i-barbell"/></svg><h3><bdi dir="ltr">Push / Pull / Legs</bdi></h3><p><bdi class="num">6</bdi> <span data-i18n="agora.daysWord"></span></p><span class="dl"><svg aria-hidden="true"><use href="#i-download-simple"/></svg><span data-i18n="agora.download"></span></span></article>
       <article class="stele" data-reveal style="--d:60ms"><svg aria-hidden="true"><use href="#i-bowl-food"/></svg><h3 data-i18n="agora.meal1"></h3><p data-i18n="agora.recipe"></p><span class="dl"><svg aria-hidden="true"><use href="#i-download-simple"/></svg><span data-i18n="agora.download"></span></span></article>
