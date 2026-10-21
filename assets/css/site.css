@@ -169,6 +169,8 @@ html[dir="rtl"] .ring { --dir: -1; }
 .wipe img { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; filter: invert(1); }
 .wipe-b { clip-path: inset(0 0 0 calc((1 - var(--w)) * 100%)); }
 html[dir="rtl"] .wipe-b { clip-path: inset(0 calc((1 - var(--w)) * 100%) 0 0); }
+.wipe-a { clip-path: inset(0 calc(var(--w) * 100%) 0 0); }
+html[dir="rtl"] .wipe-a { clip-path: inset(0 0 0 calc(var(--w) * 100%)); }
 .wipe-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); inset-inline-start: calc(var(--w) * 100%); }
 .tag { position: absolute; top: 0; font-size: var(--fs-small); padding: .15rem .6rem; border: 1px solid var(--line); background: var(--bg); color: var(--fg-2); }
 .tag-a { inset-inline-start: 0; } .tag-b { inset-inline-end: 0; color: var(--accent); border-color: var(--accent); }
