@@ -68,6 +68,7 @@ export function applyTheme(mode, { persist = true } = {}) {
   document.dispatchEvent(new CustomEvent('bm:theme', { detail: { theme: resolvedTheme() } }));
 }
 export function initTheme() {
+  applyTheme('dark', { persist: false }); return;
   const fromQuery = params.get('theme');
   const saved = store.get('bm-theme');
   applyTheme(fromQuery || (saved && saved !== 'auto' ? saved : null), { persist: !!fromQuery });

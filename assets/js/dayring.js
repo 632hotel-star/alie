@@ -18,7 +18,7 @@ export function mountDayRing(root, items, { onStar } = {}) {
         <circle class="dayring-track" cx="${C}" cy="${C}" r="${R}" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 7" />
         <circle class="dayring-fill" cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"
                 stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC}" transform="rotate(-90 ${C} ${C})" />
-        <g class="dayring-star" transform="translate(${C - 58} ${C - 48}) scale(.5)"><path d="${STAR}" transform="translate(-1036 -493)" fill="currentColor"/></g>
+        <g transform="translate(${C - 49} ${C - 49.5}) scale(.5)"><g class="dayring-star"><path d="${STAR}" transform="translate(-1036 -493)" fill="currentColor"/></g></g>
       </svg>
       <div class="dayring-items"></div>
       <p class="dayring-caption" aria-live="polite"></p>

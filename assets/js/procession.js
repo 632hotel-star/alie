@@ -14,7 +14,7 @@ export function mountProcession(root, stages, { pin = false } = {}) {
       <ol class="procession-row">
         ${stages.map((s, i) => `
           <li class="procession-item" data-stage="${i}">
-            <div class="procession-figure"><img src="assets/img/characters/${['1-idle','2','3','4','5-golden'][i]}.webp" alt="${label(s)}" width="${[1100,1054,1021,1088,1088][i]}" height="1100" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async"></div>
+            <div class="procession-figure"><img src="assets/img/characters/${['1-idle','2','3','4','5-golden'][i]}.webp" alt="${label(s)}" width="${[1100,1054,1021,1088,1088][i]}" height="1100" loading="lazy" decoding="async"></div>
             <div class="procession-meta"><div class="procession-stars" aria-hidden="true">${'<i></i>'.repeat(i + 1)}</div>
             <p class="procession-label${i === 0 || i === 4 ? '' : ' is-quiet'}">${label(s)}</p></div>
           </li>`).join('')}
@@ -27,7 +27,8 @@ export function mountProcession(root, stages, { pin = false } = {}) {
   if (pin) {
     const dir = () => document.documentElement.dir === 'rtl' ? 1 : -1;
     stickyProgress(root, (p) => {
-      const dist = Math.max(0, row.scrollWidth - row.clientWidth);
+      const track = root.querySelector('.procession-track');
+      const dist = Math.max(0, row.scrollWidth - track.clientWidth);
       row.style.transform = `translateX(${(dir() * dist * p).toFixed(1)}px)`;
       const idx = Math.min(items.length - 1, Math.round(p * (items.length - 1)));
       items.forEach((el, i) => el.classList.toggle('is-focus', i === idx));

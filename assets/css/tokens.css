@@ -3,14 +3,14 @@
 :root {
   color-scheme: dark;
   /* ground */
-  --ink: #0A0D16;        /* page background */
-  --ink-2: #111625;      /* raised plates */
-  --ink-3: #1A2033;      /* hairlines on dark */
+  --ink: #000000;        /* page background: pure black, by the client's request */
+  --ink-2: #0A0B10;      /* raised plates */
+  --ink-3: #1F2230;      /* hairlines */
   /* marble */
-  --marble: #F7F7F8;     /* figure, display text on dark */
+  --marble: #FFFFFF;     /* white: figures and display text */
   --marble-2: #E6E8EE;
-  --stone: #A3A9B8;      /* secondary text on dark, hatching */
-  --stone-2: #6B7284;    /* muted text on dark */
+  --stone: #C9CCD6;      /* secondary text */
+  --stone-2: #9A9FB0;    /* muted labels (AA on black) */
   --graphite: #2A2F3D;
   /* accent */
   --blue: #0060F8;
@@ -28,7 +28,7 @@
   --line: var(--ink-3);
   --figure: var(--marble);          /* statue body colour */
   --figure-hatch: var(--marble);    /* contour/outline colour on figures */
-  --figure-contour: #0A0D16;        /* hatching strokes: the ground colour, so cuts read as engraved */
+  --figure-contour: #000000;        /* hatching strokes: the ground colour, so cuts read as engraved */
   --accent: var(--blue);
   --accent-contrast: #FFFFFF;       /* text on accent */
   --focus: #7FB0FF;
@@ -38,7 +38,7 @@
   --grain-opacity: .07;
   --char-invert: 1;               /* the ink-line character art is inverted on the dark ground */
   /* type */
-  --font-ar-display: 'Amiri', 'Noto Naskh Arabic', serif;
+  --font-ar-display: 'Reem Kufi', 'IBM Plex Sans Arabic', system-ui, sans-serif;
   --font-ar-body: 'IBM Plex Sans Arabic', 'Readex Pro', system-ui, sans-serif;
   --font-en-display: 'Cormorant Garamond', 'Times New Roman', serif;
   --font-en-caps: 'Cinzel', 'Cormorant Garamond', serif;
@@ -63,36 +63,6 @@
   --ease-in-out: cubic-bezier(.65, 0, .35, 1);
   --dur-1: .35s; --dur-2: .7s; --dur-3: 1.2s;
   --z-nav: 50; --z-overlay: 60;
-}
-:root[data-theme="light"] {
-  color-scheme: light;
-  --bg: #F4F5F8;
-  --bg-2: #FFFFFF;
-  --fg: #0F131F;
-  --fg-2: #4B5263;
-  --fg-3: #7A8194;
-  --line: #D9DCE5;
-  --figure: #0060F8;
-  --figure-hatch: #0060F8;
-  --figure-contour: #0E1120;
-  --char-invert: 0;
-  --focus: #0A3FA6;
-}
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    color-scheme: light;
-    --bg: #F4F5F8;
-    --bg-2: #FFFFFF;
-    --fg: #0F131F;
-    --fg-2: #4B5263;
-    --fg-3: #7A8194;
-    --line: #D9DCE5;
-    --figure: #0060F8;
-    --figure-hatch: #0060F8;
-    --figure-contour: #0E1120;
-    --char-invert: 0;
-    --focus: #0A3FA6;
-  }
 }
 
 @media (min-width: 768px) { :root { --spine-x: calc(var(--gutter) - 18px); } }

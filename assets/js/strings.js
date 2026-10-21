@@ -4,7 +4,7 @@ export const STRINGS = {
   'meta.description': { ar: 'BetterMe تطبيق لياقة يجمع التمارين والتغذية والالتزام والأصدقاء والنتائج في مكان واحد، مع شخصية إغريقية تتطور معك.', en: 'BetterMe brings workouts, nutrition, streaks, friends and results into one place, with a Greek character that grows with you.' },
   // day ring
   'ring.workout': { ar: 'تمرين', en: 'Workout' },
-  'ring.meals': { ar: 'أكل', en: 'Meals' },
+  'ring.meals': { ar: 'وجبات', en: 'Meals' },
   'ring.water': { ar: 'ماء', en: 'Water' },
   'ring.supps': { ar: 'مكملات', en: 'Supplements' },
   'ring.steps': { ar: 'خطوات', en: 'Steps' },
@@ -45,7 +45,7 @@ export const STRINGS = {
   'cta.soon': { ar: 'قريبًا على App Store', en: 'Coming to the App Store' },
   // hero
   'hero.h1': { ar: 'رحلة واحدة. مكان واحد.', en: 'One journey. One place.' },
-  'hero.sub': { ar: 'تمرينك وأكلك والتزامك وأصدقاؤك ونتائجك، وشخصية تكبر معك.', en: 'Workouts, meals, streaks, friends and results, and a character that grows with you.' },
+  'hero.sub': { ar: 'تمرينك ووجباتك والتزامك وأصدقاؤك ونتائجك، وشخصية تكبر معك.', en: 'Workouts, meals, streaks, friends and results, and a character that grows with you.' },
   'hero.star': { ar: 'أضئ النجمة', en: 'Light the star' },
   // procession
   'proc.h2': { ar: 'من كسول إلى ذهبي.', en: 'From idle to golden.' },
@@ -57,12 +57,12 @@ export const STRINGS = {
   'stage.a.h2': { ar: 'ارفع. سجّل. تقدّم.', en: 'Lift. Log. Progress.' },
   'stage.a.body': { ar: 'جداول وروتينات. أوزان وتكرارات ومؤقت راحة. وزن البداية وآخر وزن وأعلى إنجاز، لكل تمرين.', en: 'Schedules and routines. Weights, reps and a rest timer. First weight, last weight and best, for every lift.' },
   'stage.a.start': { ar: 'البداية', en: 'Start' },
-  'stage.a.last': { ar: 'آخر', en: 'Last' },
+  'stage.a.last': { ar: 'الأخير', en: 'Last' },
   'stage.a.best': { ar: 'الأفضل', en: 'Best' },
   'stage.a.rest': { ar: 'راحة', en: 'Rest' },
   // stage: eat
   'stage.b.h2': { ar: 'الأكل على طريقتك.', en: 'Eat your way.' },
-  'stage.b.body': { ar: 'سعرات وبروتين وكارب ودهون. وثلاثة أنظمة: ثابت، مرن، أو حر.', en: 'Calories, protein, carbs and fat. Three systems: fixed, flexible or free.' },
+  'stage.b.body': { ar: 'سعرات وبروتين وكارب ودهون. وثلاثة أنظمة: ثابت، مرن، أو حر.', en: 'Calories, protein, carbs and fat. Three modes: fixed, flexible or free.' },
   'stage.b.protein': { ar: 'بروتين', en: 'Protein' },
   'stage.b.carbs': { ar: 'كارب', en: 'Carbs' },
   'stage.b.fat': { ar: 'دهون', en: 'Fat' },
@@ -71,7 +71,7 @@ export const STRINGS = {
   'stage.b.free': { ar: 'حر', en: 'Free' },
   // commit
   'commit.h2': { ar: 'يوم مكتمل، نجمة.', en: 'A full day earns a star.' },
-  'commit.body': { ar: 'تمرين، أكل، ماء، مكملات، خطوات، متابعة. فعّل ما تريد، وأكمله.', en: 'Workout, meals, water, supplements, steps, check-in. Turn on what you want, then finish it.' },
+  'commit.body': { ar: 'تمرين، وجبات، ماء، مكملات، خطوات، متابعة. فعّل ما تريد، وأكمله.', en: 'Workout, meals, water, supplements, steps, check-in. Turn on what you want, then finish it.' },
   'commit.off': { ar: 'إيقاف هذا الالتزام', en: 'Turn this one off' },
   'commit.status': { ar: '{d} من {n} التزامات مكتملة', en: '{d} of {n} commitments done' },
   'commit.caption': { ar: 'ثلاثة أيام فارغة تكلفك نجومك. الإجازات وفرص الاسترجاع تحميها.', en: 'Three empty days cost you stars. Breaks and recovery chances protect them.' },
@@ -80,8 +80,8 @@ export const STRINGS = {
   'commit.break': { ar: 'إجازة', en: 'Break' },
   'commit.newday': { ar: 'يوم جديد', en: 'New day' },
   // agon
-  'agon.h2': { ar: 'نافسهم بالنجوم. أو بالحديد.', en: 'Race them on stars. Or on iron.' },
-  'agon.body': { ar: 'مجموعات وتحديات ولوحات ترتيب. والمتصدر يحمل شخصية أعلى.', en: 'Groups, challenges and leaderboards. The leader carries a higher character.' },
+  'agon.h2': { ar: 'نافسهم بالنجوم. أو بالحديد.', en: 'Race on stars. Or on iron.' },
+  'agon.body': { ar: 'مجموعات وتحديات ولوحات ترتيب. والمتصدر يحمل شخصية أعلى.', en: 'Groups, challenges and leaderboards. The leader shows the stronger character.' },
   'agon.mode': { ar: 'طريقة المنافسة', en: 'Competition mode' },
   'agon.stars': { ar: 'بالنجوم', en: 'Stars' },
   'agon.iron': { ar: 'بالحديد', en: 'Iron' },
@@ -118,7 +118,7 @@ export const STRINGS = {
   'footer.copy': { ar: '© 2026 BetterMe', en: '© 2026 BetterMe' },
   'agora.daysWord': { ar: 'أيام', en: 'days' },
   'agora.recipe': { ar: 'وصفة', en: 'Recipe' },
-  'agora.importNote': { ar: 'استيراد جداولك كما هي', en: 'Bring your schedules as they are' },
+  'agora.importNote': { ar: 'استيراد جداولك كما هي', en: 'Your plans, as they are' },
   'hero.figure': { ar: 'شخصية BetterMe الإغريقية بإكليل الغار', en: 'The BetterMe Greek figure with a laurel crown' },
   'close.coming': { ar: 'قريبًا على App Store', en: 'Coming to the App Store' },
   'footer.links': { ar: 'روابط', en: 'Links' },
@@ -127,8 +127,10 @@ export const STRINGS = {
   'beads.string': { ar: 'سلسلة الأيام', en: 'String of days' },
   'beads.count': { ar: 'الأيام المكتملة: {f} من {n}.', en: 'Days filled: {f} of {n}.' },
   'beads.lost': { ar: 'ثلاثة أيام فارغة: ذهبت 3 نجوم.', en: 'Three empty days: 3 stars lost.' },
-  'beads.recovered': { ar: 'عادت النجوم وعاد الخط كما كان.', en: 'Stars recovered and the Line is whole again.' },
+  'beads.recovered': { ar: 'عادت النجوم وعاد الخط كما كان.', en: 'Stars recovered. The string of days is whole again.' },
   'beads.break': { ar: 'الأيام الثلاثة القادمة محمية.', en: 'The next 3 days are protected.' },
   'beads.unbreak': { ar: 'ألغيت الإجازة.', en: 'Break cancelled.' },
   'stage.figure': { ar: 'الشخصية وهي تتشكل', en: 'The character, taking shape' },
+  'stage.section': { ar: 'التمرين والتغذية', en: 'Training and nutrition' },
+  'agon.rank': { ar: 'المركز {r} من {n}', en: 'Rank {r} of {n}' },
 };

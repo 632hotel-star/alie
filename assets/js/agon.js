@@ -105,7 +105,7 @@ export function mountAgon(root) {
   /* ---- states, labels and tallies for the current ranking ---- */
   function dress() {
     items.forEach((it, i) => {
-      const s = STATE_BY_RANK[rank[i]], label = t(`stage.${s - 1}`), n = ticks(friends[i]);
+      const s = STATE_BY_RANK[rank[i]], label = t('agon.rank').replace('{r}', String(rank[i] + 1)).replace('{n}', String(rank.length)), n = ticks(friends[i]);
       if (it.state !== s) { it.state = s; it.disc.innerHTML = bustSVG(s, { crop: 'head', label }); }
       else it.disc.firstElementChild.setAttribute('aria-label', label);
       it.disc.setAttribute('aria-label', friends[i].you ? t('agon.add') : label);

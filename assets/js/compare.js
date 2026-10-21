@@ -28,7 +28,7 @@ export function mountCompare(root, { onCut } = {}) {
       <figcaption><span>${t('carved.projected')}</span><span>${t('carved.actual')}</span></figcaption>
     </figure>`;
   const range = root.querySelector('.compare-range');
-  const after = root.querySelector('.compare-after');
+  const before = root.querySelector('.compare-before');
   const divider = root.querySelector('.compare-divider');
   const cursor = root.querySelector('.chart-cursor');
   const frame = root.querySelector('.compare-frame');
@@ -36,8 +36,8 @@ export function mountCompare(root, { onCut } = {}) {
     const p = clamp(v / 100);
     root.style.setProperty('--cut', String(p)); if (onCut) onCut(p);
     const rtl = document.documentElement.dir === 'rtl';
-    // reveal "after" from the inline-start edge up to the cut
-    after.style.clipPath = rtl ? `inset(0 0 0 ${(1 - p) * 100}%)` : `inset(0 ${(1 - p) * 100}% 0 0)`;
+    // the first measurement occupies the reading start up to the cut; the latest is revealed beyond it
+    before.style.clipPath = rtl ? `inset(0 0 0 ${(1 - p) * 100}%)` : `inset(0 ${(1 - p) * 100}% 0 0)`;
     divider.style.insetInlineStart = `${p * 100}%`;
     cursor.setAttribute('x1', String(rtl ? 600 - p * 600 : p * 600)); cursor.setAttribute('x2', String(rtl ? 600 - p * 600 : p * 600));
   }
