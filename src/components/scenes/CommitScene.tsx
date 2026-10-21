@@ -7,6 +7,7 @@ import { charImg, logo } from "@/config/characters";
 import { useScene } from "@/components/film/useScene";
 import { LEN } from "@/config/lengths";
 import { Tap } from "@/components/ui/Tap";
+import { LazyImg } from "@/components/ui/LazyImg";
 import { frame, tap, titleIn, countTo, type Q } from "@/lib/tl";
 
 const ROUTE = "M 36 156 L 36 104 L 124 104 L 124 62 L 214 62 L 214 112 L 282 112 L 282 44";
@@ -18,7 +19,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   const [panel] = q(".cm");
   const [vA, vB, vC, vD] = q(".cm__view");
   frame(tl, root, { dur: 0.04 });
-  titleIn(tl, q(".scene__title"), 0.03, 0.05);
+  titleIn(tl, q(".scene__title"), 0.05, 0.05);
   tl.fromTo(panel, { autoAlpha: 0, y: 60, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.07, ease: "power3.out" }, 0.04);
   tl.fromTo(q(".commit__fig"), { autoAlpha: 0, x: -40 }, { autoAlpha: 1, x: 0, duration: 0.1, ease: "power3.out" }, 0.06);
 
@@ -28,10 +29,9 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   const icons = q(".cm__app");
   tl.fromTo(icons, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.04, stagger: 0.008 }, 0.15);
   tl.to(icons, { rotation: (i: number) => (i % 2 ? 6 : -6), duration: 0.015, yoyo: true, repeat: 3, stagger: 0.003, ease: "sine.inOut" }, 0.2);
-  tl.to(icons, { opacity: 0.22, scale: 0.9, filter: "grayscale(1)", duration: 0.05, stagger: 0.004 }, 0.25);
+  tl.to(icons, { opacity: 0.22, scale: 0.9, duration: 0.05, stagger: 0.004 }, 0.25);
   tl.fromTo(q(".cm__shield"), { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.045, ease: "back.out(2)" }, 0.27);
   tl.fromTo(q(".cm__shield-note"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.03 }, 0.3);
-  tl.addLabel("settled", 0.32);
 
   // A -> B
   tl.to(vA, { autoAlpha: 0, y: -24, duration: 0.04, ease: "power2.in" }, 0.35);
@@ -58,6 +58,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   tl.fromTo(q(".cm__flame"), { scale: 1 }, { scale: 1.35, duration: 0.02, yoyo: true, repeat: 1, ease: "power2.out", transformOrigin: "50% 80%" }, 0.7);
   tl.fromTo(q(".cm__seal"), { autoAlpha: 0, scale: 0.4, rotation: -30 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.05, ease: "back.out(2)" }, 0.72);
   tl.fromTo(q(".cm__seal-ring"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.05, ease: "power2.out" }, 0.72);
+  tl.addLabel("settled", 0.765);
 
   // B -> C: creatine
   tl.to(vB, { autoAlpha: 0, y: -24, duration: 0.04, ease: "power2.in" }, 0.77);
@@ -90,15 +91,14 @@ export function CommitScene() {
         <h2 className="t-display scene__title">{copy.commit.title}</h2>
       </div>
       <div className="scene__stage commit__stage">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="commit__fig" src={f4.src} srcSet={f4.srcSet} sizes="40vw" width={f4.width} height={f4.height} alt="" loading="lazy" decoding="async" />
+        <LazyImg from={3} className="commit__fig" src={f4.src} srcSet={f4.srcSet} sizes="40vw" width={f4.width} height={f4.height} />
         <div className="panel panel--app cm">
           {/* A: time, notification, focus */}
           <div className="cm__view cm__view--a">
             <div className="cm__time num">3:00<small>PM</small></div>
             <div className="cm__banner cm__banner--gym">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo.src} alt="" width={36} height={35} />
+              <img src={logo.medium} alt="" width={36} height={35} loading="lazy" />
               <span className="cm__bt"><b>BetterMe</b><span>حان وقت النادي</span></span>
               <small>الآن</small>
             </div>
@@ -140,7 +140,7 @@ export function CommitScene() {
             </div>
             <span className="cm__seal">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo.src} alt="" width={46} height={45} />
+              <img src={logo.medium} alt="" width={46} height={45} loading="lazy" />
               <svg viewBox="0 0 100 100" aria-hidden="true"><circle className="cm__seal-ring" cx="50" cy="50" r="47" pathLength={1} strokeDasharray={1} strokeDashoffset={1} /></svg>
             </span>
           </div>

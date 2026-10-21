@@ -179,7 +179,7 @@
 .meal__n--b { opacity: 0; visibility: hidden; color: var(--paper); }
 .meal__k { color: var(--g2); font-size: .85rem; min-width: 34px; text-align: end; }
 .meal__act { display: inline-flex; gap: 6px; }
-.meal__done { position: absolute; inset-inline-start: 10px; top: 50%; margin-top: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; opacity: 0; visibility: hidden; }
+.meal__done { position: absolute; inset-inline-end: 14px; top: 50%; margin-top: -12px; width: 24px; height: 24px; border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; opacity: 0; visibility: hidden; }
 .chip--sm { min-height: 36px; padding: 0 14px; font-size: .82rem; }
 .chip--idle { color: var(--g4); border-color: var(--line); }
 .nutri__adh { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); font-size: .82rem; color: var(--g2); }

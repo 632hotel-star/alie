@@ -21,6 +21,8 @@ type Director = {
   skipToEnd: () => void;
   active: number;
   isStatic: boolean;
+  /** WebGL2 available (false until the client has checked) */
+  webgl: boolean;
 };
 
 const Ctx = createContext<Director | null>(null);
@@ -37,6 +39,7 @@ export function Film({ children, header }: { children: ReactNode; header?: React
   const totalRef = useRef(1);
   const [active, setActive] = useState(0);
   const [isStatic, setStatic] = useState(false);
+  const [webgl, setWebgl] = useState(true);
 
   const register = useCallback((r: SceneReg) => {
     regs.current.push(r);
@@ -64,6 +67,7 @@ export function Film({ children, header }: { children: ReactNode; header?: React
 
   useIsoLayoutEffect(() => {
     const film = filmRef.current!;
+    setWebgl(hasWebGL());
     const mm = gsap.matchMedia();
     mm.add({ mobile: "(max-width: 767px)", desktop: "(min-width: 768px)", reduce: "(prefers-reduced-motion: reduce)" }, (ctx) => {
       const { mobile, reduce } = ctx.conditions as { mobile: boolean; reduce: boolean };
@@ -79,7 +83,7 @@ export function Film({ children, header }: { children: ReactNode; header?: React
         layout.current = [];
         list.forEach((r) => {
           const tl = r.build(r.q, env, r.root).pause();
-          tl.time(tl.labels.settled ?? tl.duration(), true);
+          tl.time(tl.labels.settled ?? tl.duration(), false); // events on, so count-ups and drawn values land on their final numbers
         });
         return () => { runCleanups(); delete film.dataset.static; setStatic(false); };
       }
@@ -111,7 +115,8 @@ export function Film({ children, header }: { children: ReactNode; header?: React
           setActive((p) => (p === idx ? p : idx));
         },
       });
-      if (process.env.NODE_ENV !== "production") (window as unknown as { __film?: unknown }).__film = { master, st, total: cursor };
+      // debug handle for QA tooling (development, or any build opened with ?qa)
+      if (process.env.NODE_ENV !== "production" || new URLSearchParams(location.search).has("qa")) (window as unknown as { __film?: unknown }).__film = { master, st, total: cursor };
       return () => { runCleanups(); st.kill(); master.kill(); };
     });
 
@@ -121,7 +126,7 @@ export function Film({ children, header }: { children: ReactNode; header?: React
     return () => { mm.revert(); window.removeEventListener("load", refresh); };
   }, []);
 
-  const api = useMemo<Director>(() => ({ register, jumpTo, skipToEnd, active, isStatic }), [register, jumpTo, skipToEnd, active, isStatic]);
+  const api = useMemo<Director>(() => ({ register, jumpTo, skipToEnd, active, isStatic, webgl }), [register, jumpTo, skipToEnd, active, isStatic, webgl]);
 
   return (
     <Ctx.Provider value={api}>

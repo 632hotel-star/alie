@@ -73,7 +73,7 @@ export function HeroScene() {
       field.current = df;
       df.layout();
       if (reduced) { state.current.assemble = 1; df.draw(); return; }
-      intro = gsap.to(state.current, { assemble: 1, duration: 2.7, ease: "none", delay: 0.15, onUpdate: () => df.draw() });
+      intro = gsap.to(state.current, { assemble: 1, duration: 2.1, ease: "none", delay: 0.1, onUpdate: () => df.draw() });
     };
 
     const ready = Promise.all([a, b].map((im) => (im.complete && im.naturalWidth ? Promise.resolve() : im.decode().catch(() => {}))));
@@ -107,7 +107,7 @@ export function HeroScene() {
         <img ref={figRef} className="hero__img" src={fig.src} srcSet={fig.srcSet} sizes="(min-width: 960px) 40vw, 90vw" width={fig.width} height={fig.height} alt={`${siteConfig.name}: ${heroStage.name}`} decoding="async" fetchPriority="high" />
       </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img ref={logoRef} className="hero__logo" src={logo.src} srcSet={logo.srcSet} sizes="360px" alt="" width={512} height={499} />
+      <img ref={logoRef} className="hero__logo" src={logo.src} alt="" width={512} height={499} />
       <canvas ref={canvasRef} className="hero__dots" aria-hidden="true" />
     </section>
   );

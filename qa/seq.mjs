@@ -11,7 +11,7 @@ const page = await ctx.newPage();
 const logs = [];
 page.on("console", (m) => { if (m.type() === "error" || (m.type() === "warning" && !m.text().includes("preload"))) logs.push(`[${m.type()}] ${m.text().slice(0, 200)}`); });
 page.on("pageerror", (e) => logs.push(`[pageerror] ${e.message}`));
-await page.goto("http://localhost:3000", { waitUntil: "networkidle" });
+await page.goto((process.env.BASE || "http://localhost:3000") + "/?qa=1", { waitUntil: "networkidle" });
 await page.waitForTimeout(1800);
 const layout = JSON.parse((await page.evaluate(() => document.getElementById("film")?.dataset.layout)) || "[]");
 const sc = layout.find((l) => l.id === sceneId);
@@ -21,7 +21,9 @@ for (const p of ps.split(",")) {
   const cur = await page.evaluate(() => scrollY);
   const steps = 8;
   for (let i = 1; i <= steps; i++) { await page.evaluate((v) => window.scrollTo(0, v), Math.round(cur + ((y - cur) * i) / steps)); await page.waitForTimeout(80); }
-  await page.waitForTimeout(opts.includes("slow") ? 2600 : 1600);
+  // wait for the scrubbed playhead to actually reach the scroll position (software rendering can lag), then let GL paint
+  await page.waitForFunction(() => { const f = window.__film; if (!f) return true; return Math.abs(f.master.time() - f.st.progress * f.total) < 0.004; }, null, { timeout: 40000, polling: 200 }).catch(() => {});
+  await page.waitForTimeout(opts.includes("slow") ? 1800 : 900);
   const f = `qa/shots/${name}-${p}.png`;
   await page.screenshot({ path: f });
   files.push(f);

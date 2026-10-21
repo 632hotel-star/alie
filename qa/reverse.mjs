@@ -7,7 +7,7 @@ const page = await (await browser.newContext({ viewport: { width: +W, height: +H
 const errs = [];
 page.on("pageerror", (e) => errs.push(e.message));
 page.on("console", (m) => { if (m.type() === "error") errs.push(m.text().slice(0, 160)); });
-await page.goto("http://localhost:3000", { waitUntil: "networkidle" });
+await page.goto((process.env.BASE || "http://localhost:3000") + "/?qa=1", { waitUntil: "networkidle" });
 await page.waitForTimeout(3500);
 const total = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
 const pos = Array.from({ length: +n }, (_, i) => Math.round(((i + 0.5) / +n) * total));
@@ -15,7 +15,8 @@ async function goTo(y) {
   const cur = await page.evaluate(() => scrollY);
   const steps = 10;
   for (let i = 1; i <= steps; i++) { await page.evaluate((v) => window.scrollTo(0, v), Math.round(cur + ((y - cur) * i) / steps)); await page.waitForTimeout(70); }
-  await page.waitForTimeout(+(process.env.WAIT || 2600));
+  await page.waitForFunction(() => { const f = window.__film; if (!f) return true; return Math.abs(f.master.time() - f.st.progress * f.total) < 0.0005; }, null, { timeout: 40000, polling: 150 }).catch(() => {});
+  await page.waitForTimeout(+(process.env.WAIT || 1200));
 }
 for (let i = 0; i < pos.length; i++) { await goTo(pos[i]); await page.screenshot({ path: `qa/shots/rv-down-${i}.png` }); }
 for (let i = pos.length - 1; i >= 0; i--) { await goTo(pos[i]); await page.screenshot({ path: `qa/shots/rv-up-${i}.png` }); }

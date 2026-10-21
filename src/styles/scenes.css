@@ -38,7 +38,7 @@ html:not(.js) .scene, .film[data-static] .scene { position: relative; visibility
 .header-cta { min-height: 40px; padding: 0 1.1rem; font-size: .92rem; }
 
 .rail { position: fixed; z-index: 45; inset-inline-end: max(2px, var(--safe-r)); top: 50%; transform: translateY(-50%); display: none; flex-direction: column; }
-.rail button { width: 28px; height: 38px; display: grid; place-items: center; }
+.rail button { width: 36px; height: 44px; display: grid; place-items: center; }
 .rail i { display: block; width: 2px; height: 12px; border-radius: 2px; background: var(--g5); transition: height .3s var(--ease-out), background-color .3s; }
 .rail button[aria-current="true"] i { height: 26px; background: var(--paper); }
 .rail button:hover i { background: var(--g2); }
@@ -125,4 +125,9 @@ html:not(.js) .scene, .film[data-static] .scene { position: relative; visibility
 @media (min-width: 960px) {
   .widgets { grid-template-columns: minmax(0, 1fr); }
   .widgets .scene__copy { position: absolute; }
+}
+
+@media (max-height: 700px) {
+  .hero__actions .btn { min-height: 46px; font-size: .95rem; padding-inline: 1.1rem; }
+  .hero__actions { gap: 8px; }
 }

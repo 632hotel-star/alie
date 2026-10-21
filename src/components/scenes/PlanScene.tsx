@@ -40,7 +40,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   const badges = q(".plan-summary .badge");
   const segs = q(".plan-progress b");
   frame(tl, root, { dur: 0.06 });
-  titleIn(tl, q(".scene__title"), 0.04, 0.08);
+  titleIn(tl, q(".scene__title"), 0.06, 0.08);
   tl.fromTo(panel, { autoAlpha: 0, y: 70, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.1, ease: "power3.out" }, 0.06);
 
   // three decisions: goal -> days -> minutes
@@ -103,7 +103,6 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   tl.to(q(".plan-ready"), { autoAlpha: 0, y: -10, duration: 0.05 }, 0.88);
   tl.to(first, { y: lift, duration: 0.08, ease: "power3.inOut" }, 0.92);
   tl.to(q(".plan-panel__head"), { autoAlpha: 0, duration: 0.04 }, 0.9);
-  tl.to(q(".scene__title"), { autoAlpha: 0, y: -24, duration: 0.06, ease: "power2.in" }, 0.9);
   return tl;
 }
 

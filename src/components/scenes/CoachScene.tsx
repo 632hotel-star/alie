@@ -24,7 +24,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   const [panel] = q(".co");
   const [vA, vB] = q(".co__view");
   frame(tl, root, { dur: 0.04 });
-  titleIn(tl, q(".scene__title"), 0.03, 0.05);
+  titleIn(tl, q(".scene__title"), 0.05, 0.05);
   tl.fromTo(panel, { autoAlpha: 0, y: 60, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.07, ease: "power3.out" }, 0.04);
 
   // A: request, thinking, proposal, approval
@@ -50,13 +50,13 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   tl.to(q(".co__col--b .co__ex--cut"), { opacity: 0.35, textDecoration: "line-through", duration: 0.03 }, 0.46);
   countTo(tl, q(".co__tot--a")[0], 60, 45, 0.44, 0.06);
   tl.fromTo(q(".co__ask"), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.04, ease: "power3.out" }, 0.52);
-  tl.addLabel("settled", 0.55);
   const approve = q(".co__approve")[0];
   tap(tl, approve, 0.6, 0.05);
   tl.to(q(".co__ask-wrap"), { autoAlpha: 0, y: -8, duration: 0.03 }, 0.655);
   tl.fromTo(q(".co__done"), { autoAlpha: 0, y: 10, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.04, ease: "back.out(1.8)" }, 0.66);
   tl.to(q(".co__col--b"), { autoAlpha: 0.25, duration: 0.04 }, 0.66);
   tl.to(q(".co__col--a"), { borderColor: "#ffffff", duration: 0.04 }, 0.66);
+  tl.addLabel("settled", 0.71);
 
   // B: lean bulk -> cut, checkpoint -> pdf report
   tl.to(vA, { autoAlpha: 0, y: -24, duration: 0.04, ease: "power2.in" }, 0.74);
@@ -83,7 +83,7 @@ export function CoachScene() {
         <div className="panel panel--app co">
           <div className="co__bar">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logo.src} alt="" width={34} height={33} className="co__av" />
+            <img src={logo.medium} alt="" width={34} height={33} className="co__av" loading="lazy" />
             <span className="co__who"><b>مدرب BetterMe</b><small>مدعوم بالذكاء الاصطناعي</small></span>
           </div>
 

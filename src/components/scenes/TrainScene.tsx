@@ -8,6 +8,7 @@ import { glSlot, mannequinDriver } from "@/components/gl/glState";
 import { useScene } from "@/components/film/useScene";
 import { LEN } from "@/config/lengths";
 import { Tap } from "@/components/ui/Tap";
+import { LazyImg } from "@/components/ui/LazyImg";
 import { Ring } from "@/components/ui/Ring";
 import { frame, tap, countTo, type Q } from "@/lib/tl";
 import { week } from "./PlanScene";
@@ -35,7 +36,7 @@ function build(q: Q, env: { mobile: boolean; webgl: boolean }, root: HTMLElement
   frame(tl, root, { dur: 0.05 });
 
   // the panel is already on screen (identical to the end of the Plan chapter); the title and the exercise appear
-  tl.fromTo(q(".scene__title"), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05, ease: "power3.out" }, 0.03);
+  tl.fromTo(q(".scene__title"), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.05, ease: "power3.out" }, 0.05);
   tl.fromTo(panel, { autoAlpha: 1 }, { autoAlpha: 1, duration: 0.01 }, 0);
   tl.fromTo(tableView, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.06, ease: "power3.out" }, 0.03);
   tl.fromTo(q(".train__fig"), { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.09, ease: "power3.out" }, 0.05);
@@ -132,11 +133,9 @@ export function TrainScene() {
         <h2 className="t-display scene__title">{copy.train.title}</h2>
       </div>
       <div className="scene__stage train__stage">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="train__fig" src={f3.src} srcSet={f3.srcSet} sizes="40vw" width={f3.width} height={f3.height} alt="" loading="lazy" decoding="async" />
+        <LazyImg from={1} className="train__fig" src={f3.src} srcSet={f3.srcSet} sizes="40vw" width={f3.width} height={f3.height} />
         <div className="train__slot" ref={glSlot("mannequin")} aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="gl-poster" data-poster="mannequin" src="/posters/mannequin.webp" alt="" width={490} height={1123} loading="lazy" />
+          <LazyImg from={1} poster className="gl-poster" data-poster="mannequin" src="/posters/mannequin.webp" width={490} height={1123} />
         </div>
 
         <div className="panel panel--app tracker">
@@ -177,10 +176,8 @@ export function TrainScene() {
                 <div className="chart__bigrow"><b className="chart__big num">50</b><span className="chart__unit num">kg</span></div>
               </div>
               <div className="chart__avatar" aria-hidden="true">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={f2.src} alt="" width={56} height={56} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="pr__a2" src={f3.src} alt="" width={56} height={56} />
+                <LazyImg from={1} src={f2.thumb} width={56} height={56} />
+                <LazyImg from={1} className="pr__a2" src={f3.thumb} width={56} height={56} />
               </div>
             </div>
             <svg className="chart__svg" viewBox="0 0 320 200" role="img" aria-label="تطور وزن Bench Press من 50 إلى 60 كيلوغرام">

@@ -35,7 +35,8 @@ export function charImg(file: string) {
   const srcSet = heights.map((h) => `/characters/${file}-${h}.webp ${sizes[String(h)].w}w`).join(", ");
   const mid = heights[Math.min(1, heights.length - 1)];
   const full = sizes[String(heights[heights.length - 1])];
-  return { src: `/characters/${file}-${mid}.webp`, srcSet, width: full.w, height: full.h, ratio: full.w / full.h };
+  const small = heights[0];
+  return { src: `/characters/${file}-${mid}.webp`, srcSet, thumb: `/characters/${file}-${small}.webp`, width: full.w, height: full.h, ratio: full.w / full.h };
 }
 
-export const logo = { src: "/brand/logo-512.webp", srcSet: "/brand/logo-192.webp 192w, /brand/logo-512.webp 512w, /brand/logo-1024.webp 1024w" };
+export const logo = { src: "/brand/logo-512.webp", small: "/brand/logo-96.webp", medium: "/brand/logo-192.webp" };

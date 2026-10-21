@@ -47,8 +47,8 @@ meta["logo"] = save_sizes(logo, "logo", [96, 192, 512, 1024], OUT_BRAND)
 side = max(logo.size)
 sq = Image.new("RGBA", (side, side), (0, 0, 0, 255))
 sq.alpha_composite(logo, ((side-logo.width)//2, (side-logo.height)//2))
-sq.convert("RGB").resize((512, 512), Image.LANCZOS).save("src/app/icon.png")
-sq.convert("RGB").resize((180, 180), Image.LANCZOS).save("src/app/apple-icon.png")
+sq.convert("RGB").resize((128, 128), Image.LANCZOS).save("src/app/icon.png", optimize=True)
+sq.convert("RGB").resize((180, 180), Image.LANCZOS).save("src/app/apple-icon.png", optimize=True)
 
 # characters (file index 2..5 are stages 2..5; stage 1 is not supplied)
 for n in range(2, 6):

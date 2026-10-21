@@ -8,7 +8,7 @@ const shots = [
 ];
 for (const [name, q, w, h] of shots) {
   const page = await (await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2 })).newPage();
-  await page.goto(`http://localhost:3000/gltest?${q}`);
+  await page.goto(`${process.env.BASE || "http://localhost:3000"}/gltest?${q}`);
   await page.waitForFunction(() => window.__ready === true, null, { timeout: 30000 });
   await page.waitForTimeout(1500);
   await page.screenshot({ path: `qa/shots/poster-${name}.png`, omitBackground: true });

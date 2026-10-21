@@ -9,6 +9,7 @@ import { availableStages, charImg, logo } from "@/config/characters";
 import { useScene } from "@/components/film/useScene";
 import { LEN } from "@/config/lengths";
 import { Cta } from "@/components/ui/Cta";
+import { LazyImg } from "@/components/ui/LazyImg";
 import { frame, type Q } from "@/lib/tl";
 
 const seq = availableStages;
@@ -127,13 +128,11 @@ export function FinaleScene() {
           ))}
         </svg>
         <Sparkle className="fin__star" weight="fill" size={34} aria-hidden="true" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="fin__logo" src={logo.src} srcSet={logo.srcSet} sizes="170px" alt="" width={170} height={166} />
+        <LazyImg from={6} className="fin__logo" src={logo.src} width={170} height={166} />
         {seq.map((s) => {
           const c = charImg(s.file!);
           return (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={s.id} className={`fin__img ${s.gold ? "is-gold" : ""}`} src={c.src} srcSet={c.srcSet} sizes="(min-width: 960px) 40vw, 90vw" width={c.width} height={c.height} alt={`${s.name}: ${s.tagline}`} loading="lazy" decoding="async" />
+            <LazyImg key={s.id} from={6} className={`fin__img ${s.gold ? "is-gold" : ""}`} src={c.src} srcSet={c.srcSet} sizes="(min-width: 960px) 40vw, 90vw" width={c.width} height={c.height} alt={`${s.name}: ${s.tagline}`} />
           );
         })}
         <div className="fin__names" aria-hidden="true">
@@ -147,8 +146,7 @@ export function FinaleScene() {
             const c = charImg(s.file!);
             return (
               <span key={s.id} className={`fin__th ${s.gold ? "is-gold" : ""}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.src} alt="" width={c.width} height={c.height} loading="lazy" decoding="async" />
+                <LazyImg from={6} src={c.thumb} width={c.width} height={c.height} />
               </span>
             );
           })}

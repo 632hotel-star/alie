@@ -8,7 +8,12 @@ export function frame(tl: TL, root: HTMLElement, o: { in?: boolean; out?: boolea
   const d = o.dur ?? 0.06;
   const { in: fin = true, out: fout = true } = o;
   if (fin) tl.fromTo(root, { autoAlpha: 0 }, { autoAlpha: 1, duration: d, ease: "none" }, 0);
-  if (fout) tl.to(root, { autoAlpha: 0, duration: d, ease: "none" }, 1 - d);
+  if (fout) {
+    tl.to(root, { autoAlpha: 0, duration: d, ease: "none" }, 1 - d);
+    // the chapter title leaves just before the next chapter's title arrives, so two headlines never collide
+    const title = root.querySelector(".scene__title");
+    if (title) tl.to(title, { autoAlpha: 0, y: -18, duration: 0.04, ease: "power2.in" }, 1 - 0.16);
+  }
 }
 
 /** Animate a number in a text node. Deterministic and reversible (driven by the scrubbed playhead). */

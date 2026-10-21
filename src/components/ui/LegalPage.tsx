@@ -9,7 +9,7 @@ export function LegalPage({ title, children }: { title: string; children: React.
       <header className="legal__bar">
         <Link href="/" className="brand" aria-label={siteConfig.name}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logo.src} srcSet={logo.srcSet} sizes="30px" alt="" width={30} height={29} />
+          <img src={logo.small} alt="" width={30} height={29} />
           <span>{siteConfig.name}</span>
         </Link>
         <Link href="/" className="btn btn--ghost header-cta">الرئيسية</Link>

@@ -7,6 +7,7 @@ import { charImg } from "@/config/characters";
 import { useScene } from "@/components/film/useScene";
 import { LEN } from "@/config/lengths";
 import { Tap } from "@/components/ui/Tap";
+import { LazyImg } from "@/components/ui/LazyImg";
 import { frame, tap, titleIn, countTo, type Q } from "@/lib/tl";
 
 const daily = [76.9, 77.2, 76.8, 77.4, 77.1, 77.6, 77.3, 77.8, 77.5, 78.0, 77.7, 78.2, 77.9, 78.4];
@@ -27,7 +28,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   const [panel] = q(".pg");
   const [v1, v2, v3, v4, v5] = q(".pg__view");
   frame(tl, root, { dur: 0.04 });
-  titleIn(tl, q(".scene__title"), 0.03, 0.05);
+  titleIn(tl, q(".scene__title"), 0.05, 0.05);
   tl.fromTo(panel, { autoAlpha: 0, y: 60, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.07, ease: "power3.out" }, 0.04);
 
   // 1) camera with ghost overlay: align, shutter
@@ -40,7 +41,6 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   tap(tl, shutter, 0.3, 0.05);
   tl.fromTo(q(".cam__flash"), { autoAlpha: 0 }, { autoAlpha: 0.92, duration: 0.008 }, 0.345);
   tl.to(q(".cam__flash"), { autoAlpha: 0, duration: 0.03, ease: "power2.out" }, 0.355);
-  tl.addLabel("settled", 0.27);
 
   // 2) camera -> before / after slider -> timelapse
   tl.to(v1, { autoAlpha: 0, scale: 0.96, duration: 0.04, ease: "power2.in" }, 0.39);
@@ -49,6 +49,7 @@ function build(q: Q, _env: unknown, root: HTMLElement) {
   tl.fromTo(q(".ba__knob"), { "--h": 0 }, { "--h": 50, duration: 0.08, ease: "power2.inOut" }, 0.45);
   tl.to(q(".ba__after"), { "--h": 66, duration: 0.03, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0.54);
   tl.to(q(".ba__knob"), { "--h": 66, duration: 0.03, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0.54);
+  tl.addLabel("settled", 0.575);
   // timelapse
   tl.to(q(".ba__slider"), { autoAlpha: 0, duration: 0.03 }, 0.6);
   tl.fromTo(q(".ba__tl"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.03 }, 0.6);
@@ -86,8 +87,7 @@ export function ProgressScene() {
   const ref = useScene({ id: "progress", len: LEN.progress, landing: 0.2, build });
   const s2 = charImg("stage-2"), s3 = charImg("stage-3"), s4 = charImg("stage-4");
   const img = (c: ReturnType<typeof charImg>, cls: string) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img className={cls} src={c.src} srcSet={c.srcSet} sizes="360px" width={c.width} height={c.height} alt="" loading="lazy" decoding="async" />
+    <LazyImg from={4} className={cls} src={c.src} srcSet={c.srcSet} sizes="360px" width={c.width} height={c.height} />
   );
   return (
     <section ref={ref} className="scene progress" data-scene="progress" aria-label="التطور">
@@ -127,7 +127,7 @@ export function ProgressScene() {
               <span className="ba__cap">بعد</span>
             </div>
             <div className="tl__thumbs">
-              {[s2, s3, s4].map((c, i) => <span key={i} className="tl__thumb">{img(c, "tl__timg")}</span>)}
+              {[s2, s3, s4].map((c, i) => <span key={i} className="tl__thumb"><LazyImg from={4} className="tl__timg" src={c.thumb} width={c.width} height={c.height} /></span>)}
             </div>
             <p className="demo-note">عرض رمزي لمرور الوقت، وليس وعداً بنتيجة</p>
           </div>

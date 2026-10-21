@@ -8,6 +8,7 @@ import { useScene } from "@/components/film/useScene";
 import { LEN } from "@/config/lengths";
 import type { SceneEnv } from "@/components/film/director";
 import { Tap } from "@/components/ui/Tap";
+import { LazyImg } from "@/components/ui/LazyImg";
 import { Ring } from "@/components/ui/Ring";
 import { frame, tap, titleIn, countTo, withCommas, type Q } from "@/lib/tl";
 
@@ -28,8 +29,8 @@ function build(q: Q, env: SceneEnv, root: HTMLElement) {
   const [scan] = q(".scan");
   const [mac] = q(".mac");
   const [nutri] = q(".nutri");
-  frame(tl, root, { dur: 0.04 });
-  titleIn(tl, q(".scene__title"), 0.02, 0.05);
+  frame(tl, root, { dur: 0.03 });
+  titleIn(tl, q(".scene__title"), 0.05, 0.05);
 
   // keep the scan frame glued to the projected barcode
   const place = () => {
@@ -96,7 +97,7 @@ function build(q: Q, env: SceneEnv, root: HTMLElement) {
   };
   stepTo(1, 0.78, 0.09);
   tl.fromTo(q(".nutri__toast"), { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: 0.03, ease: "power3.out" }, 0.86);
-  tl.to(q(".nutri__toast"), { autoAlpha: 0, duration: 0.03 }, 0.935);
+  tl.to(q(".nutri__toast"), { autoAlpha: 0, duration: 0.03 }, 0.9);
 
   // 7) saved meals: "ate" breakfast, "ate substitute" for lunch
   const meals = q(".meal");
@@ -107,17 +108,16 @@ function build(q: Q, env: SceneEnv, root: HTMLElement) {
     tl.fromTo(m.querySelector(".meal__done"), { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.03, ease: "back.out(2)" }, at + 0.035);
     tl.to(m, { borderColor: "rgba(255,255,255,0.42)", duration: 0.03 }, at + 0.03);
   };
-  ate(meals[0], 0.875, q(".meal--b .chip")[0]);
-  stepTo(2, 0.915, 0.06);
+  ate(meals[0], 0.83, q(".meal--b .chip")[0]);
+  stepTo(2, 0.87, 0.03);
   const altBtn = q(".meal--l .chip--alt")[0];
-  ate(meals[1], 0.935, altBtn);
-  tl.to(q(".meal--l .meal__n--a"), { autoAlpha: 0, y: -6, duration: 0.025 }, 0.955);
-  tl.fromTo(q(".meal--l .meal__n--b"), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.025 }, 0.96);
-  countTo(tl, q(".meal--l .meal__k")[0], 700, 420, 0.955, 0.03);
-  stepTo(3, 0.968, 0.03);
-  tl.fromTo(q(".nutri__adh"), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.03 }, 0.97);
-  tl.addLabel("settled", 0.985);
-  tl.to(root, { autoAlpha: 0, duration: 0.0001 }, 1);
+  ate(meals[1], 0.895, altBtn);
+  tl.to(q(".meal--l .meal__n--a"), { autoAlpha: 0, y: -6, duration: 0.02 }, 0.925);
+  tl.fromTo(q(".meal--l .meal__n--b"), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.02 }, 0.93);
+  countTo(tl, q(".meal--l .meal__k")[0], 700, 420, 0.925, 0.025);
+  stepTo(3, 0.935, 0.025);
+  tl.fromTo(q(".nutri__adh"), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.02 }, 0.945);
+  tl.addLabel("settled", 0.965);
   return tl;
 }
 
@@ -131,10 +131,8 @@ export function FuelScene() {
       </div>
       <div className="scene__stage fuel__stage">
         <div className="fuel__slot" ref={glSlot("box")} aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="gl-poster" data-poster="box-front" src="/posters/box-front.webp" alt="" width={1330} height={932} loading="lazy" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="gl-poster" data-poster="box-back" src="/posters/box-back.webp" alt="" width={1280} height={809} loading="lazy" />
+          <LazyImg from={2} poster className="gl-poster" data-poster="box-front" src="/posters/box-front.webp" width={1330} height={932} />
+          <LazyImg from={2} poster className="gl-poster" data-poster="box-back" src="/posters/box-back.webp" width={1280} height={809} />
         </div>
 
         <div className="scan" aria-hidden="true">
@@ -197,7 +195,7 @@ export function FuelScene() {
             </div>
             <div className="meal meal--l">
               <span className="meal__main"><span className="meal__t">غداء</span>
-                <span className="meal__nw"><span className="meal__n meal__n--a">رز ودجاج</span><span className="meal__n meal__n--b">تونة وأرز · بديل</span></span></span>
+                <span className="meal__nw"><span className="meal__n meal__n--a">رز ودجاج</span><span className="meal__n meal__n--b">بديل: تونة وأرز</span></span></span>
               <span className="meal__k num">700</span>
               <span className="meal__act"><span className="chip chip--sm chip--alt"><span className="chip__label">أكلت بديل</span><Tap /></span></span>
               <span className="meal__done"><Check size={16} weight="bold" /></span>

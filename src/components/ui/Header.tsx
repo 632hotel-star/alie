@@ -8,7 +8,7 @@ export function Header() {
     <header className="site-header">
       <a href="#top" className="brand" aria-label={siteConfig.name}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={logo.src} srcSet={logo.srcSet} sizes="30px" alt="" width={30} height={29} decoding="async" />
+        <img src={logo.small} alt="" width={30} height={29} decoding="async" />
         <span>{siteConfig.name}</span>
       </a>
       <Cta className="header-cta" tone={isLaunched ? "paper" : "ghost"} />
